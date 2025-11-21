@@ -1,0 +1,214 @@
+.audio-player {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border-light);
+  margin-top: 2rem;
+}
+
+.audio-player-header {
+  margin-bottom: 1rem;
+}
+
+.audio-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.audio-player-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.play-pause-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.play-pause-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(124, 58, 31, 0.3);
+}
+
+.play-pause-btn:active {
+  transform: scale(0.95);
+}
+
+.progress-section {
+  flex: 1;
+  min-width: 200px;
+}
+
+.time-display {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--color-bg);
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  border-radius: 3px;
+  position: relative;
+  transition: width 0.1s ease;
+}
+
+.progress-handle {
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: var(--color-white);
+  border: 2px solid var(--color-primary);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.progress-bar:hover .progress-handle {
+  opacity: 1;
+}
+
+.volume-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.volume-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.volume-btn:hover {
+  background: var(--color-bg);
+  color: var(--color-primary);
+}
+
+.volume-slider {
+  width: 80px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--color-bg);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.volume-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  background: var(--color-secondary);
+}
+
+.volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.volume-slider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  background: var(--color-secondary);
+}
+
+.audio-player-placeholder {
+  background: linear-gradient(135deg, rgba(124, 58, 31, 0.08) 0%, rgba(139, 69, 19, 0.08) 100%);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.audio-player-placeholder p {
+  margin: 0;
+  color: var(--color-text-light);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .audio-player {
+    padding: 1.25rem;
+  }
+
+  .audio-player-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .play-pause-btn {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto;
+  }
+
+  .progress-section {
+    width: 100%;
+  }
+
+  .volume-section {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .volume-slider {
+    flex: 1;
+    max-width: 200px;
+  }
+}
+

@@ -1,6 +1,10 @@
+import AudioPlayer from '../../components/AudioPlayer/AudioPlayer'
 import './Lyrics.css'
 
 const Lyrics = () => {
+  // TODO: Thay đổi đường dẫn này thành file audio thực tế từ Canva
+  // Có thể đặt file audio trong public/assest/audio/ hoặc dùng URL từ CDN
+  const audioSrc = null // Ví dụ: '/assest/audio/loi-hat-muong.mp3'
   return (
     <div className="lyrics-page">
       <section className="section hero-section">
@@ -38,17 +42,19 @@ const Lyrics = () => {
                 allowFullScreen
               ></iframe>
             </div>
-            <div className="embed-note">
-              <p>💡 <strong>Lưu ý:</strong> Embed mode có thể không hiển thị đầy đủ controls. Để xem với nút âm thanh và controls đầy đủ, vui lòng nhấn nút bên dưới để mở trong tab mới.</p>
-            </div>
+            <AudioPlayer 
+              audioSrc={audioSrc}
+              title="Lời hát Đúm - Sổ tay âm thanh"
+            />
             <div className="embed-fallback">
+              <p>Để xem với đầy đủ controls trên Canva, vui lòng truy cập:</p>
               <a 
                 href="https://www.canva.com/design/DAG37luogjg/EAalM6d0LLmObL193a5WsQ/view" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="btn btn-primary"
               >
-                🎵 Mở trên Canva (có nút âm thanh đầy đủ)
+                🎵 Mở trên Canva
               </a>
             </div>
           </div>
