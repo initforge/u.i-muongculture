@@ -19,12 +19,28 @@ function AppContent() {
   const audioUnlockedRef = useRef(false)
   const isHomePage = location.pathname === '/'
 
-  // Initialize audio element immediately
+  // Initialize audio element immediately with aggressive preloading
   if (!audioRef.current) {
     audioRef.current = new Audio('https://res.cloudinary.com/dghawsj8e/video/upload/v1763891276/t%C6%B0_li%E1%BB%87u_trang_ch%E1%BB%A7_sxphue.mp3')
     audioRef.current.volume = 0.5 // Giảm 1 nửa âm lượng
     audioRef.current.loop = true
     audioRef.current.preload = 'auto'
+    // Force start loading immediately
+    audioRef.current.load()
+    
+    // Log audio loading progress
+    audioRef.current.addEventListener('loadstart', () => {
+      console.log('[Audio] Load started')
+    })
+    audioRef.current.addEventListener('loadeddata', () => {
+      console.log('[Audio] Data loaded, readyState:', audioRef.current.readyState)
+    })
+    audioRef.current.addEventListener('canplay', () => {
+      console.log('[Audio] Can play, readyState:', audioRef.current.readyState)
+    })
+    audioRef.current.addEventListener('canplaythrough', () => {
+      console.log('[Audio] Can play through, readyState:', audioRef.current.readyState)
+    })
   }
 
   // Unlock audio on first user interaction (required for autoplay on HTTPS)
@@ -32,22 +48,31 @@ function AppContent() {
     const unlockAudio = async () => {
       if (!audioUnlockedRef.current && audioRef.current) {
         try {
+          console.log('[Audio] Attempting to unlock audio context')
           // Try to play and immediately pause to unlock audio context
           await audioRef.current.play()
           audioRef.current.pause()
           audioRef.current.currentTime = 0
           audioUnlockedRef.current = true
+          console.log('[Audio] Audio context unlocked successfully')
           
-          // If on home page, play again
+          // If on home page, play again immediately
           if (location.pathname === '/') {
             const savedTime = localStorage.getItem('homeAudioTime')
             if (savedTime) {
               audioRef.current.currentTime = parseFloat(savedTime)
+            } else {
+              audioRef.current.currentTime = 0
             }
-            await audioRef.current.play()
+            try {
+              await audioRef.current.play()
+              console.log('[Audio] Audio playing after unlock')
+            } catch (err) {
+              console.log('[Audio] Failed to play after unlock:', err)
+            }
           }
         } catch (error) {
-          // Audio still blocked, will try again on next interaction
+          console.log('[Audio] Unlock failed, will retry on next interaction:', error)
         }
       }
     }
@@ -102,20 +127,29 @@ function AppContent() {
         }
         
         try {
+          console.log('[Audio] Attempting to play, readyState:', audio.readyState, 'unlocked:', audioUnlockedRef.current)
           await audio.play()
+          console.log('[Audio] Playing successfully')
         } catch (error) {
+          console.log('[Audio] Play blocked:', error.message)
           // Audio blocked - will be unlocked on user interaction
         }
       }
 
       // Try to play with multiple strategies
       const tryPlay = () => {
+        console.log('[Audio] Try play, readyState:', audio.readyState, 'paused:', audio.paused)
         if (audio.readyState >= 2) {
           if (audio.paused) {
+            // Try to play even if not unlocked (some browsers allow it)
             playAudio()
+          } else {
+            console.log('[Audio] Already playing')
           }
         } else {
+          console.log('[Audio] Waiting for audio to be ready')
           const handleReady = () => {
+            console.log('[Audio] Audio ready, attempting to play')
             playAudio()
           }
           
@@ -128,28 +162,32 @@ function AppContent() {
       // Try immediately
       tryPlay()
 
-      // Retry with delays (longer delays for production)
+      // Retry with shorter delays for faster response
       const timeouts = [
         setTimeout(() => {
-          if (audio.paused && audio.readyState >= 2 && audioUnlockedRef.current) {
+          if (audio.paused && audio.readyState >= 2) {
+            console.log('[Audio] Retry 1 (100ms)')
+            playAudio()
+          }
+        }, 100),
+        setTimeout(() => {
+          if (audio.paused && audio.readyState >= 2) {
+            console.log('[Audio] Retry 2 (300ms)')
             playAudio()
           }
         }, 300),
         setTimeout(() => {
-          if (audio.paused && audio.readyState >= 2 && audioUnlockedRef.current) {
+          if (audio.paused && audio.readyState >= 2) {
+            console.log('[Audio] Retry 3 (600ms)')
             playAudio()
           }
-        }, 800),
+        }, 600),
         setTimeout(() => {
-          if (audio.paused && audio.readyState >= 2 && audioUnlockedRef.current) {
+          if (audio.paused && audio.readyState >= 2) {
+            console.log('[Audio] Retry 4 (1000ms)')
             playAudio()
           }
-        }, 1500),
-        setTimeout(() => {
-          if (audio.paused && audio.readyState >= 2 && audioUnlockedRef.current) {
-            playAudio()
-          }
-        }, 2500)
+        }, 1000)
       ]
 
       return () => {
@@ -173,25 +211,24 @@ function AppContent() {
       }
       
       try {
+        console.log('[Audio] Navigate to home - attempting to play')
         await audio.play()
+        console.log('[Audio] Navigate to home - playing successfully')
       } catch (error) {
-        // Audio blocked - will be unlocked on user interaction
+        console.log('[Audio] Navigate to home - play blocked:', error.message)
       }
     }
 
-    // Only try to play if audio is unlocked or if it's already playing
-    if (audioUnlockedRef.current || !audio.paused) {
-      // If audio is ready and paused, play it
-      if (audio.readyState >= 2 && audio.paused) {
-        playAudio()
-      } else {
-        const handleCanPlay = () => {
-          if (audio.paused) {
-            playAudio()
-          }
+    // Try to play regardless of unlock status (will be handled by browser)
+    if (audio.readyState >= 2 && audio.paused) {
+      playAudio()
+    } else {
+      const handleCanPlay = () => {
+        if (audio.paused) {
+          playAudio()
         }
-        audio.addEventListener('canplay', handleCanPlay, { once: true })
       }
+      audio.addEventListener('canplay', handleCanPlay, { once: true })
     }
   }, [isHomePage])
 
