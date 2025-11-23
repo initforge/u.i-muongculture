@@ -1,9 +1,96 @@
+import { useEffect, useRef } from 'react'
+import { useAudio } from '../../contexts/AudioContext'
 import Carousel from '../../components/Carousel/Carousel'
 import ServiceCard from '../../components/ServiceCard/ServiceCard'
 import { newsData } from '../../data/news'
 import './Home.css'
 
 const Home = () => {
+  const audio = useAudio()
+  const youtubePlayerRef = useRef(null)
+  const resumeTimeoutRef = useRef(null)
+
+  useEffect(() => {
+    // Initialize YouTube IFrame API
+    const initYouTubePlayer = () => {
+      if (window.YT && window.YT.Player) {
+        youtubePlayerRef.current = new window.YT.Player('youtube-player', {
+          videoId: '6Lpem8amhxk',
+          width: 560,
+          height: 315,
+          playerVars: {
+            'playsinline': 1,
+            'rel': 0,
+            'modestbranding': 1
+          },
+          events: {
+            onReady: (event) => {
+              console.log('YouTube player ready')
+            },
+            onStateChange: (event) => {
+              if (audio && audio instanceof HTMLAudioElement) {
+                // State: -1 (unstarted), 0 (ended), 1 (playing), 2 (paused), 3 (buffering), 5 (cued)
+                if (event.data === 1) {
+                  // Video is playing - pause audio
+                  audio.pause()
+                  // Clear any existing resume timeout
+                  if (resumeTimeoutRef.current) {
+                    clearTimeout(resumeTimeoutRef.current)
+                    resumeTimeoutRef.current = null
+                  }
+                } else if (event.data === 2 || event.data === 0) {
+                  // Video is paused or ended - resume audio after 3s
+                  if (resumeTimeoutRef.current) {
+                    clearTimeout(resumeTimeoutRef.current)
+                  }
+                  resumeTimeoutRef.current = setTimeout(() => {
+                    if (audio) {
+                      audio.play().catch(err => {
+                        console.log('Could not resume audio:', err)
+                      })
+                    }
+                  }, 3000) // 3 seconds delay
+                }
+              }
+            }
+          }
+        })
+      } else {
+        // If YT is not ready, wait for it
+        setTimeout(initYouTubePlayer, 100)
+      }
+    }
+
+    // Wait for YouTube IFrame API to load
+    if (window.YT && window.YT.Player) {
+      // API already loaded
+      initYouTubePlayer()
+    } else if (window.YT && window.YT.ready) {
+      // API is loading, wait for it
+      window.YT.ready(initYouTubePlayer)
+    } else {
+      // API not loaded yet, set callback
+      window.onYouTubeIframeAPIReady = () => {
+        initYouTubePlayer()
+      }
+    }
+
+    // Cleanup function
+    return () => {
+      // Clear timeout
+      if (resumeTimeoutRef.current) {
+        clearTimeout(resumeTimeoutRef.current)
+      }
+      // Destroy YouTube player
+      if (youtubePlayerRef.current) {
+        try {
+          youtubePlayerRef.current.destroy()
+        } catch (e) {
+          console.log('Error destroying YouTube player:', e)
+        }
+      }
+    }
+  }, [audio])
   const carouselImages = [
     'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866463/bao1_dh3dg5.jpg',
     'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866461/bao3_d3blch.jpg',
@@ -29,16 +116,7 @@ const Home = () => {
             </div>
             <div className="video-section">
               <div className="video-wrapper">
-                <iframe
-                  width="560"
-                  height="315"
-                  src="https://www.youtube.com/embed/6Lpem8amhxk?si=i7a20FOHzhoBZvPR"
-                  title="YouTube video player"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                ></iframe>
+                <div id="youtube-player"></div>
               </div>
             </div>
           </div>

@@ -13,7 +13,7 @@ export const newsData = [
     id: 2,
     title: "Người lưu giữ hiện vật văn hóa Mường",
     excerpt: "Câu chuyện về ông Bùi Thanh Bình và hành trình gần 40 năm sưu tầm, gìn giữ hơn 300 kỷ vật của người Mường...",
-    image: "https://res.cloudinary.com/dghawsj8e/image/upload/v1763866463/bao1_dh3dg5.jpg",
+    image: "https://res.cloudinary.com/dghawsj8e/image/upload/v1763866461/bao2_veo7xj.jpg",
     date: "2024-01-10",
     link: "https://nhandan.vn/nguoi-luu-giu-hien-vat-van-hoa-muong-post909237.html",
     category: "research"
@@ -48,8 +48,8 @@ export const newsData = [
   },
   {
     id: 6,
-    title: "Khám phá văn hóa Mường ở Hòa Bình",
-    excerpt: "Hành trình khám phá những nét đẹp văn hóa truyền thống của dân tộc Mường tại Hòa Bình...",
+    title: "Tôn vinh văn hóa Mường trong kỷ nguyên hội nhập",
+    excerpt: "Văn hóa Mường được tôn vinh và phát huy trong bối cảnh hội nhập quốc tế...",
     image: "https://res.cloudinary.com/dghawsj8e/image/upload/v1763866464/bao6_hptmwj.jpg",
     date: "2024-01-05",
     link: "https://vietnam.vnanet.vn/vietnamese/long-form/kham-pha-van-hoa-muong-o-hoa-binh-364938.html",

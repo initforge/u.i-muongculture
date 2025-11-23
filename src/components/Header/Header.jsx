@@ -70,14 +70,14 @@ const Header = () => {
                 alt="Banner 1" 
                 className="banner-image banner-1"
               />
-            </div>
+              </div>
             <div className="banner-image-wrapper">
               <img 
                 src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763866038/banner2_ejwy17.jpg" 
                 alt="Banner 2" 
                 className="banner-image banner-2"
               />
-            </div>
+              </div>
             <div className="banner-image-wrapper">
               <img 
                 src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763866038/banner3_khnq5d.jpg" 
