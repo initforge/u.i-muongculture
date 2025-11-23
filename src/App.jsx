@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { AudioContext } from './contexts/AudioContext'
 import Header from './components/Header/Header'
@@ -16,7 +16,7 @@ function AppContent() {
   const location = useLocation()
   const audioRef = useRef(null)
   const saveTimeIntervalRef = useRef(null)
-  const audioUnlockedRef = useRef(false)
+  const [audioUnlocked, setAudioUnlocked] = useState(false)
   const isHomePage = location.pathname === '/'
 
   // Initialize audio element immediately with aggressive preloading
@@ -46,14 +46,14 @@ function AppContent() {
   // Unlock audio on first user interaction (required for autoplay on HTTPS)
   useEffect(() => {
     const unlockAudio = async () => {
-      if (!audioUnlockedRef.current && audioRef.current) {
+      if (!audioUnlocked && audioRef.current) {
         try {
           console.log('[Audio] Attempting to unlock audio context')
           // Try to play and immediately pause to unlock audio context
           await audioRef.current.play()
           audioRef.current.pause()
           audioRef.current.currentTime = 0
-          audioUnlockedRef.current = true
+          setAudioUnlocked(true)
           console.log('[Audio] Audio context unlocked successfully')
           
           // If on home page, play again immediately
@@ -77,23 +77,96 @@ function AppContent() {
       }
     }
 
-    // Listen for any user interaction
-    const events = ['click', 'touchstart', 'keydown', 'scroll']
+    // Listen for any user interaction - prioritize click and touchstart
+    const events = ['click', 'touchstart', 'keydown', 'scroll', 'mousemove']
     const handlers = events.map(event => {
       const handler = () => {
         unlockAudio()
-        // Remove listeners after first successful unlock
-        events.forEach(e => {
-          document.removeEventListener(e, handlers[events.indexOf(e)])
+        // Remove all listeners after first successful unlock
+        events.forEach((e, index) => {
+          try {
+            document.removeEventListener(e, handlers[index])
+          } catch (err) {
+            // Ignore errors
+          }
         })
       }
-      document.addEventListener(event, handler, { once: true, passive: true })
+      // Use capture phase for faster response, especially for click/touchstart
+      const useCapture = event === 'click' || event === 'touchstart'
+      document.addEventListener(event, handler, { once: true, passive: true, capture: useCapture })
       return handler
     })
+    
+    // Try to auto-unlock on page load
+    // Navigation itself counts as user interaction, so we can try to unlock immediately
+    const tryAutoUnlock = async () => {
+      if (location.pathname === '/' && audioRef.current && !audioUnlocked) {
+        // Wait for audio to be ready
+        if (audioRef.current.readyState >= 2) {
+          try {
+            await unlockAudio()
+          } catch (err) {
+            // Will unlock on next real user interaction
+          }
+        } else {
+          // Wait for audio to be ready, then unlock
+          const waitForReady = () => {
+            if (audioRef.current.readyState >= 2 && !audioUnlocked) {
+              unlockAudio()
+            }
+          }
+          audioRef.current.addEventListener('canplay', waitForReady, { once: true })
+          audioRef.current.addEventListener('canplaythrough', waitForReady, { once: true })
+        }
+      }
+    }
+    
+    // Try immediately (navigation counts as user interaction on some browsers)
+    tryAutoUnlock()
+    
+    // Also try to trigger a subtle interaction to unlock audio
+    // Scroll 1px to trigger scroll event (passive event, may work)
+    if (location.pathname === '/' && !audioUnlocked) {
+      // Try a very subtle scroll to trigger unlock
+      const currentScroll = window.pageYOffset || document.documentElement.scrollTop
+      window.scrollTo({ top: currentScroll, behavior: 'auto' })
+      
+      // Also try to trigger mousemove by dispatching a synthetic event
+      // This may not work on all browsers, but worth trying
+      try {
+        const syntheticEvent = new MouseEvent('mousemove', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        })
+        document.dispatchEvent(syntheticEvent)
+      } catch (e) {
+        // Some browsers may block synthetic events
+      }
+    }
+    
+    // Also try after delays to catch audio loading
+    const autoUnlockTimeouts = [
+      setTimeout(() => {
+        if (location.pathname === '/' && !audioUnlocked) {
+          tryAutoUnlock()
+        }
+      }, 100),
+      setTimeout(() => {
+        if (location.pathname === '/' && !audioUnlocked) {
+          tryAutoUnlock()
+        }
+      }, 500),
+      setTimeout(() => {
+        if (location.pathname === '/' && !audioUnlocked) {
+          tryAutoUnlock()
+        }
+      }, 1000)
+    ]
 
     // Also try on page visibility change (when user switches back to tab)
     const handleVisibilityChange = () => {
-      if (!document.hidden && location.pathname === '/' && audioUnlockedRef.current) {
+      if (!document.hidden && location.pathname === '/' && audioUnlocked) {
         const audio = audioRef.current
         if (audio && audio.paused) {
           audio.play().catch(() => {})
@@ -103,8 +176,13 @@ function AppContent() {
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
+      autoUnlockTimeouts.forEach(timeout => clearTimeout(timeout))
       events.forEach((event, index) => {
-        document.removeEventListener(event, handlers[index])
+        try {
+          document.removeEventListener(event, handlers[index])
+        } catch (err) {
+          // Ignore errors
+        }
       })
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
@@ -138,10 +216,17 @@ function AppContent() {
 
       // Try to play with multiple strategies
       const tryPlay = () => {
-        console.log('[Audio] Try play, readyState:', audio.readyState, 'paused:', audio.paused)
+        console.log('[Audio] Try play, readyState:', audio.readyState, 'paused:', audio.paused, 'unlocked:', audioUnlockedRef.current)
+        
+        // If audio is unlocked, try to play immediately
+        if (audioUnlocked && audio.readyState >= 2 && audio.paused) {
+          playAudio()
+          return
+        }
+        
         if (audio.readyState >= 2) {
           if (audio.paused) {
-            // Try to play even if not unlocked (some browsers allow it)
+            // Try to play even if not unlocked (some browsers allow it on navigation)
             playAudio()
           } else {
             console.log('[Audio] Already playing')
@@ -150,7 +235,10 @@ function AppContent() {
           console.log('[Audio] Waiting for audio to be ready')
           const handleReady = () => {
             console.log('[Audio] Audio ready, attempting to play')
-            playAudio()
+            // Check if unlocked before playing
+            if (audioUnlocked || audio.readyState >= 2) {
+              playAudio()
+            }
           }
           
           audio.addEventListener('canplay', handleReady, { once: true })
@@ -162,29 +250,23 @@ function AppContent() {
       // Try immediately
       tryPlay()
 
-      // Retry with shorter delays for faster response
+      // Retry with delays - check unlock status
       const timeouts = [
         setTimeout(() => {
-          if (audio.paused && audio.readyState >= 2) {
-            console.log('[Audio] Retry 1 (100ms)')
+          if (audio.paused && audio.readyState >= 2 && audioUnlocked) {
+            console.log('[Audio] Retry 1 (200ms) - unlocked')
             playAudio()
           }
-        }, 100),
+        }, 200),
         setTimeout(() => {
-          if (audio.paused && audio.readyState >= 2) {
-            console.log('[Audio] Retry 2 (300ms)')
+          if (audio.paused && audio.readyState >= 2 && audioUnlocked) {
+            console.log('[Audio] Retry 2 (500ms) - unlocked')
             playAudio()
           }
-        }, 300),
+        }, 500),
         setTimeout(() => {
-          if (audio.paused && audio.readyState >= 2) {
-            console.log('[Audio] Retry 3 (600ms)')
-            playAudio()
-          }
-        }, 600),
-        setTimeout(() => {
-          if (audio.paused && audio.readyState >= 2) {
-            console.log('[Audio] Retry 4 (1000ms)')
+          if (audio.paused && audio.readyState >= 2 && audioUnlocked) {
+            console.log('[Audio] Retry 3 (1000ms) - unlocked')
             playAudio()
           }
         }, 1000)
@@ -194,9 +276,9 @@ function AppContent() {
         timeouts.forEach(timeout => clearTimeout(timeout))
       }
     }
-  }, [location.pathname]) // Run when pathname changes
+  }, [location.pathname, audioUnlocked]) // Run when pathname or unlock status changes
 
-  // Play audio when navigating to home page
+  // Play audio when navigating to home page or when audio gets unlocked
   useEffect(() => {
     const audio = audioRef.current
     if (!audio || !isHomePage) return
@@ -211,7 +293,7 @@ function AppContent() {
       }
       
       try {
-        console.log('[Audio] Navigate to home - attempting to play')
+        console.log('[Audio] Navigate to home - attempting to play, unlocked:', audioUnlockedRef.current)
         await audio.play()
         console.log('[Audio] Navigate to home - playing successfully')
       } catch (error) {
@@ -219,18 +301,32 @@ function AppContent() {
       }
     }
 
-    // Try to play regardless of unlock status (will be handled by browser)
-    if (audio.readyState >= 2 && audio.paused) {
-      playAudio()
-    } else {
-      const handleCanPlay = () => {
-        if (audio.paused) {
-          playAudio()
+    // If unlocked, try to play immediately
+    if (audioUnlocked) {
+      if (audio.readyState >= 2 && audio.paused) {
+        playAudio()
+      } else {
+        const handleCanPlay = () => {
+          if (audio.paused) {
+            playAudio()
+          }
         }
+        audio.addEventListener('canplay', handleCanPlay, { once: true })
       }
-      audio.addEventListener('canplay', handleCanPlay, { once: true })
+    } else {
+      // Not unlocked yet, but try anyway (navigation might count as interaction)
+      if (audio.readyState >= 2 && audio.paused) {
+        playAudio()
+      } else {
+        const handleCanPlay = () => {
+          if (audio.paused) {
+            playAudio()
+          }
+        }
+        audio.addEventListener('canplay', handleCanPlay, { once: true })
+      }
     }
-  }, [isHomePage])
+  }, [isHomePage, audioUnlocked])
 
   // Handle audio playback based on current page
   useEffect(() => {
