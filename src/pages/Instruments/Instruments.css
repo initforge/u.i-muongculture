@@ -61,10 +61,8 @@
   margin-top: 2rem;
 }
 
-.parts-list h3 {
-  font-size: 1.5rem;
-  color: var(--color-primary);
-  margin-bottom: 1rem;
+.parts-list {
+  margin-top: 1.5rem;
 }
 
 .parts-list ol {
@@ -284,6 +282,12 @@
   text-align: center;
 }
 
+.instrument-media {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 .instrument-image {
   text-align: center;
 }
@@ -293,9 +297,29 @@
   max-width: 800px;
   height: 500px;
   object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  margin: 0 auto 1rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  margin: 0 auto;
+}
+
+.instrument-video {
+  text-align: center;
+}
+
+.video-player {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  background: var(--color-bg);
+}
+
+.video-caption {
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+  font-style: italic;
+  margin: 0.75rem 0 0 0;
 }
 
 .image-caption {

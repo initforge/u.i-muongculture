@@ -38,13 +38,29 @@
   font-size: 2.5rem;
   color: var(--color-primary);
   margin-bottom: 1.5rem;
+  text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.experience-intro h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  border-radius: 2px;
 }
 
 .experience-intro p {
-  font-size: 1.1rem;
-  line-height: 1.8;
+  font-size: 1.15rem;
+  line-height: 1.9;
   color: var(--color-text);
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
+  text-align: center;
 }
 
 .experience-embed {
@@ -57,10 +73,11 @@
   position: relative;
   padding-bottom: 56.25%; /* 16:9 aspect ratio */
   height: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
   background-color: var(--color-bg);
+  border: 1px solid var(--color-border-light);
 }
 
 .experience-iframe {
@@ -74,18 +91,33 @@
 }
 
 .experience-features {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2.5rem;
   background-color: var(--color-bg);
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-light);
 }
 
 .experience-features h3 {
-  font-size: 1.75rem;
+  font-size: 2rem;
   color: var(--color-primary);
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.experience-features h3::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  border-radius: 2px;
 }
 
 .features-list {
@@ -95,13 +127,13 @@
 }
 
 .features-list li {
-  padding: 1rem;
-  margin-bottom: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
   background-color: var(--color-white);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   border-left: 4px solid var(--color-primary);
-  font-size: 1.05rem;
-  line-height: 1.6;
+  font-size: 1.1rem;
+  line-height: 1.7;
   color: var(--color-text);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }

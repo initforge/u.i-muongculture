@@ -13,39 +13,30 @@ const Characteristics = () => {
       <section className="section music-characteristics">
         <div className="container">
           <div className="section-header">
-            <div className="section-icon">🎵</div>
-            <h2 className="section-title">Đặc trưng âm nhạc</h2>
+            <h2 className="section-title">Đặc trưng</h2>
           </div>
           
           <div className="content-layout">
             <div className="content-text">
               <p>
-                Âm nhạc Mường có hai loại chính: một loại có giai điệu và nhịp điệu, và một loại 
-                chỉ có giai điệu mà không có nhịp điệu. Đây là điểm đặc biệt tạo nên sự độc đáo 
-                trong âm nhạc truyền thống của người Mường.
-              </p>
-              <p>
-                Các nhạc cụ chính được sử dụng trong âm nhạc Mường bao gồm <strong>sáo ôi</strong> 
-                (một loại sáo dọc 4 lỗ) và <strong>đàn nhị</strong> (đàn hai dây). Những nhạc cụ 
-                này không chỉ là công cụ tạo ra âm thanh mà còn là biểu tượng văn hóa, gắn liền với 
-                đời sống tinh thần của người Mường.
+                Có hai loại: hát có giai điệu và nhịp phách và hát chỉ có giai điệu và không có nhịp phách. Nhạc cụ chủ yếu là sáo ôi (sáo có 4 lỗ) và đàn nhị.
               </p>
             </div>
             
             <div className="instruments-preview">
               <div className="instrument-item">
                 <img 
-                  src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=300&fit=crop" 
+                  src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763871160/saooi_qlchya.jpg" 
                   alt="Sáo ôi" 
                 />
-                <h3>Sáo Ôi</h3>
+                <p className="instrument-caption">Sáo ôi</p>
               </div>
               <div className="instrument-item">
                 <img 
-                  src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&h=300&fit=crop" 
+                  src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763871091/dannhi_pmkrri.jpg" 
                   alt="Đàn nhị" 
                 />
-                <h3>Đàn nhị</h3>
+                <p className="instrument-caption">Đàn nhị</p>
               </div>
             </div>
           </div>
@@ -56,32 +47,25 @@ const Characteristics = () => {
       <section className="section lyrics-skill decorative-pattern">
         <div className="container">
           <div className="section-header">
-            <div className="section-icon">✍️</div>
             <h2 className="section-title">Kỹ năng tạo lời hát</h2>
           </div>
 
           <div className="content-layout reverse">
             <div className="content-text">
               <p>
-                Lời hát trong <strong>hát Đúp</strong> (hay <strong>hát Đúm</strong>) chủ yếu được 
-                các nghệ nhân ứng tác ngay trong lúc hát để đối đáp với đối tác. Đây là kỹ năng 
-                quan trọng nhất, đòi hỏi sự thông minh, vốn từ vựng phong phú (đặc biệt là tiếng 
-                Mường cổ) và khả năng sáng tạo tức thời.
+                Lời hát Đúp (hát Đúm) đa phần không có sẵn, đều do nghệ nhân trong khi hát tức khắc sáng tạo ra để đối đáp với bạn hát. Đây là kỹ năng quan trọng nhất trong khi hát. Nó đòi hỏi trí thông minh, vốn liếng về tiếng nói, nhất là tiếng Mường cổ, sự sáng tạo đột xuất. Có một số nghệ nhân có thể hát Đúp liên tục trong hơn 10 tiếng đồng hồ mà không cạn lời, không cạn khả năng tạo lời hát như: Bùi Văn Lịch, Bùi Văn Nghi, Bùi Thị Lan, Đinh Thị Hiền...
               </p>
               <p>
-                Một số nghệ nhân tài năng có thể hát Đúp liên tục trong hơn 10 giờ mà không hết 
-                lời, như các nghệ nhân <strong>Bùi Văn Lịch</strong>, <strong>Bùi Văn Nghi</strong>, 
-                <strong>Bùi Thị Lan</strong>, và <strong>Đinh Thị Hiền</strong>. Điều quan trọng 
-                là lời hát phải có vần điệu logic, câu từ mượt mà, không rời rạc và có tính thuyết phục.
+                Trong việc đặt lời hát, quan trong nhất là việc đặt lời và gieo vần câu trên xuống câu dưới sao cho hợp lí, có thế lời hát mới nhuần nhuyễn, không lạc điệu, không bị ngắt quãng, thuyết phục người nghe.
               </p>
             </div>
             
             <div className="artisan-image">
               <img 
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=600&fit=crop" 
+                src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763871165/dactrung1_csrcdo.jpg" 
                 alt="Nghệ nhân Bùi Văn Lịch và Đinh Thị Hiền" 
               />
-              <p className="image-caption">Nghệ nhân Bùi Văn Lịch và nghệ nhân Đinh Thị Hiền</p>
+              <p className="image-caption">Nghệ nhân Bùi Văn Lịch và Đinh Thị Hiền</p>
             </div>
           </div>
         </div>
@@ -91,34 +75,21 @@ const Characteristics = () => {
       <section className="section hat-dum-role">
         <div className="container">
           <div className="section-header">
-            <div className="section-icon">🎭</div>
             <h2 className="section-title">Vai trò của điệu hát Đúm</h2>
           </div>
 
           <div className="role-content">
-            <div className="role-image">
-              <img 
-                src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&h=500&fit=crop" 
-                alt="Hát Đúm trong cộng đồng Mường" 
-              />
-            </div>
-            
             <div className="role-text">
               <p>
-                Điệu hát Đúm có sức hút đặc biệt, thu hút hàng nghìn người nghe. Nó không chỉ là 
-                một hình thức giải trí mà còn có vai trò giáo dục quan trọng:
+                Hát Đúm (hát Đúp) thường cuốn hút hàng nghìn người nghe tại chỗ, đi sâu vào tiềm thức của mỗi thế hệ. Bởi hát Đúp giúp giáo dục tình yêu quê hương đất nước, trân trọng giá trị nghệ thuật của con người ở mỗi vùng quê; hỗ trợ các thao tác lao động, làm bớt đi sự căng thẳng, mệt mỏi trong quá trình lao động, con người thêm hưng phấn, lao động được năng xuất đạt kết quả cao hơn; tạo nếp sống sinh hoạt văn hóa cộng đồng; ta thêm yêu cái đẹp, có tính thẩm mĩ cao.
               </p>
-              <ul className="role-list">
-                <li>Giáo dục lòng yêu nước và tình yêu quê hương</li>
-                <li>Phát huy giá trị nghệ thuật của con người</li>
-                <li>Giảm căng thẳng trong lao động, tăng năng suất</li>
-                <li>Phát triển đời sống văn hóa cộng đồng</li>
-                <li>Nâng cao thẩm mỹ và cảm thụ nghệ thuật</li>
-              </ul>
-              <p>
-                Hát Đúm là một di sản văn hóa quý giá, góp phần bảo tồn và phát huy những giá trị 
-                truyền thống của dân tộc Mường.
-              </p>
+            </div>
+            
+            <div className="role-image">
+              <img 
+                src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763871162/dactrung2_ubrfcg.jpg" 
+                alt="Vai trò của điệu hát Đúm" 
+              />
             </div>
           </div>
         </div>

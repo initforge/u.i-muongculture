@@ -39,6 +39,43 @@
   background-color: var(--color-white);
 }
 
+.content-intro {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.intro-content {
+  font-size: 1.15rem;
+  line-height: 1.9;
+  color: var(--color-text);
+}
+
+.intro-content p {
+  margin-bottom: 1.75rem;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 2.5rem;
+  text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  border-radius: 2px;
+}
+
 .content-grid {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;

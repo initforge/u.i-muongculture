@@ -27,15 +27,24 @@
   margin-bottom: 3rem;
 }
 
-.section-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.section-header .section-title {
+.section-title {
   font-size: 2.5rem;
   color: var(--color-primary);
   margin: 0;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  border-radius: 2px;
 }
 
 .content-layout {
@@ -93,6 +102,14 @@
   margin: 0;
 }
 
+.instrument-caption {
+  font-size: 1rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin: 0.75rem 0 0 0;
+  text-align: center;
+}
+
 .artisan-image {
   text-align: center;
 }
@@ -114,9 +131,10 @@
 }
 
 .role-content {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 3rem;
+  align-items: center;
 }
 
 .role-image {
@@ -132,35 +150,13 @@
 }
 
 .role-text {
-  font-size: 1.1rem;
-  line-height: 1.8;
+  font-size: 1.15rem;
+  line-height: 1.9;
   color: var(--color-text);
 }
 
-.role-list {
-  list-style: none;
-  padding: 0;
-  margin: 1.5rem 0;
-}
-
-.role-list li {
-  padding: 0.75rem 0;
-  padding-left: 2rem;
-  position: relative;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.role-list li::before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: var(--color-primary);
-  font-weight: bold;
-  font-size: 1.2rem;
-}
-
 .role-text p {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0;
 }
 
 @media (max-width: 968px) {
@@ -195,12 +191,8 @@
     padding: 2rem 0;
   }
 
-  .section-header .section-title {
+  .section-title {
     font-size: 2rem;
-  }
-
-  .section-icon {
-    font-size: 2.5rem;
   }
 
   .music-characteristics,
@@ -212,6 +204,15 @@
   .content-text,
   .role-text {
     font-size: 1rem;
+  }
+
+  .role-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .role-image {
+    order: -1;
   }
 
   .role-image img,

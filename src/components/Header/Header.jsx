@@ -51,7 +51,9 @@ const Header = () => {
                   </svg>
                 </div>
                 <div className="logo-text-wrapper">
-                  <div className="logo-line-top">GIỮ HỒN HÁT ĐÚM</div>
+                  <div className="logo-line-top">
+                    GIỮ HỒN <span className="logo-highlight">HÁT ĐÚM</span>
+                  </div>
                   <div className="logo-line-bottom">
                     <span className="logo-main">TRONG KỶ NGUYÊN</span>
                     <span className="logo-accent">SỐ</span>
@@ -61,61 +63,27 @@ const Header = () => {
             </Link>
           </div>
 
-          <div className="header-top-right">
-            <div className="cultural-illustrations">
-              {/* Nguồn gốc - Cây/rễ */}
-              <div className="illustration-item" title="Nguồn gốc">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2V8M12 8C10 8 8 10 8 12C8 14 10 16 12 16C14 16 16 14 16 12C16 10 14 8 12 8Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                  <path d="M8 12L4 16M16 12L20 16" stroke="currentColor" strokeWidth="1.5"/>
-                  <path d="M12 16V22" stroke="currentColor" strokeWidth="1.5"/>
-                </svg>
-              </div>
-              {/* Đặc trưng - Cồng chiêng */}
-              <div className="illustration-item" title="Đặc trưng">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                  <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                  <path d="M12 4V2M12 22V20" stroke="currentColor" strokeWidth="1.5"/>
-                  <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
-                </svg>
-              </div>
-              {/* Truyện - Sách */}
-              <div className="illustration-item" title="Truyện">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M4 6C4 5 5 4 6 4H18C19 4 20 5 20 6V18C20 19 19 20 18 20H6C5 20 4 19 4 18V6Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                  <line x1="8" y1="8" x2="16" y2="8" stroke="currentColor" strokeWidth="1.5"/>
-                  <line x1="8" y1="12" x2="14" y2="12" stroke="currentColor" strokeWidth="1.5"/>
-                  <line x1="8" y1="16" x2="12" y2="16" stroke="currentColor" strokeWidth="1.5"/>
-                </svg>
-              </div>
-              {/* Nhạc cụ - Sáo */}
-              <div className="illustration-item" title="Nhạc cụ">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <line x1="8" y1="4" x2="8" y2="20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                  <circle cx="8" cy="8" r="1.5" fill="currentColor"/>
-                  <circle cx="8" cy="12" r="1.5" fill="currentColor"/>
-                  <circle cx="8" cy="16" r="1.5" fill="currentColor"/>
-                  <path d="M8 4L16 8" stroke="currentColor" strokeWidth="1.5"/>
-                </svg>
-              </div>
-              {/* Lời hát - Pattern văn hóa */}
-              <div className="illustration-item" title="Lời hát">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6 6L18 18M18 6L6 18" stroke="currentColor" strokeWidth="1.5"/>
-                  <circle cx="12" cy="12" r="6" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                  <circle cx="12" cy="12" r="2" fill="currentColor"/>
-                </svg>
-              </div>
-              {/* Trải nghiệm - 3D/Cube */}
-              <div className="illustration-item" title="Trải nghiệm">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L20 7V17L12 22L4 17V7L12 2Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                  <line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" strokeWidth="1.5"/>
-                  <line x1="4" y1="7" x2="20" y2="7" stroke="currentColor" strokeWidth="1.5"/>
-                  <line x1="4" y1="17" x2="20" y2="17" stroke="currentColor" strokeWidth="1.5"/>
-                </svg>
-              </div>
+          <div className="header-banner-images">
+            <div className="banner-image-wrapper">
+              <img 
+                src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763866039/banner1_bcxmmx.jpg" 
+                alt="Banner 1" 
+                className="banner-image banner-1"
+              />
+            </div>
+            <div className="banner-image-wrapper">
+              <img 
+                src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763866038/banner2_ejwy17.jpg" 
+                alt="Banner 2" 
+                className="banner-image banner-2"
+              />
+            </div>
+            <div className="banner-image-wrapper">
+              <img 
+                src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763866038/banner3_khnq5d.jpg" 
+                alt="Banner 3" 
+                className="banner-image banner-3"
+              />
             </div>
           </div>
         </div>
@@ -196,7 +164,7 @@ const Header = () => {
                   className={isActive('/trai-nghiem') ? 'active' : ''}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  TRẢI NGHIỆM
+                  BẢO TÀNG ẢO
                 </Link>
               </li>
             </ul>

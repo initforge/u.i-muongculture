@@ -15,15 +15,9 @@ const Stories = () => {
       <section className="section content-section">
         <div className="container">
           <div className="story-intro">
-            <h2>Giai điệu vượt thung lũng</h2>
+            <h2>Truyện Mường</h2>
             <p>
-              Đắm chìm trong những câu chuyện cổ tích và truyền thuyết của người Mường, nơi mỗi 
-              câu chuyện đều mang trong mình những bài học sâu sắc về cuộc sống, tình yêu, và 
-              giá trị nhân văn.
-            </p>
-            <p>
-              Những câu chuyện này được truyền từ đời này sang đời khác, góp phần bảo tồn và 
-              phát huy giá trị văn hóa truyền thống của dân tộc Mường.
+              Khám phá những câu chuyện truyền thống đầy ý nghĩa của dân tộc Mường, nơi mỗi câu chuyện đều mang trong mình những bài học sâu sắc về cuộc sống, tình yêu, và giá trị nhân văn. Những câu chuyện này được truyền từ đời này sang đời khác, góp phần bảo tồn và phát huy giá trị văn hóa truyền thống của dân tộc Mường.
             </p>
           </div>
 
@@ -31,9 +25,10 @@ const Stories = () => {
             <div className="embed-container">
               <iframe
                 src="https://gemini.google.com/share/f9e9248c32de"
-                title="Gemini Storybook - Giai điệu vượt thung lũng"
+                title="Gemini Storybook - Truyện Mường"
                 className="story-iframe"
                 allow="fullscreen"
+                allowFullScreen
               ></iframe>
             </div>
             <div className="embed-fallback">
@@ -42,7 +37,7 @@ const Stories = () => {
                 href="https://gemini.google.com/share/f9e9248c32de" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="btn"
+                className="btn btn-primary"
               >
                 Mở truyện trên Gemini
               </a>

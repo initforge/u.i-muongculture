@@ -5,8 +5,13 @@ import './Home.css'
 
 const Home = () => {
   const carouselImages = [
-    '/assest/trangchu/profile1.jpg',
-    '/assest/trangchu/profile2.jpg'
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866463/bao1_dh3dg5.jpg',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866461/bao3_d3blch.jpg',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866461/bao4_fb7kiv.jpg',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866462/bao5_rgwx6y.jpg',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866464/bao6_hptmwj.jpg',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866467/bao7_ygoll5.jpg',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866465/bao9_j5fo6v.jpg'
   ]
 
   const researchNews = newsData.filter(news => news.category === 'research')
@@ -15,6 +20,41 @@ const Home = () => {
 
   return (
     <div className="home">
+      {/* Hero Section with Profile and Video */}
+      <section className="hero-section">
+        <div className="container">
+          <div className="hero-content">
+            <div className="hero-left">
+              <div className="profile-section">
+                <div className="profile-image-wrapper">
+                  <img 
+                    src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763866463/bao1_dh3dg5.jpg" 
+                    alt="Profile" 
+                    className="profile-image"
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="hero-right">
+              <div className="video-section">
+                <div className="video-wrapper">
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/6Lpem8amhxk?si=i7a20FOHzhoBZvPR"
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Hero Carousel Section */}
       <section className="hero-carousel-section">
         <div className="container">
@@ -30,7 +70,7 @@ const Home = () => {
           <div className="services-grid">
             <ServiceCard
               title="Tham quan bảo tàng online"
-              image="/assest/trangchu/baotangmuong.jpg"
+              image="https://res.cloudinary.com/dghawsj8e/image/upload/v1763866477/baotangmuong_lednhr.webp"
               link="/trai-nghiem"
               icon={
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -41,7 +81,7 @@ const Home = () => {
             />
             <ServiceCard
               title="Đọc truyện bảo tàng Mường"
-              image="/assest/trangchu/truyengiandan.png"
+              image="https://res.cloudinary.com/dghawsj8e/image/upload/v1763866478/truyengiandan_wcn8uo.png"
               link="/truyen"
               icon={
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -52,7 +92,7 @@ const Home = () => {
             />
             <ServiceCard
               title="Nghe nhạc bảo tàng Mường"
-              image="/assest/trangchu/nhacmuong.jpg"
+              image="https://res.cloudinary.com/dghawsj8e/image/upload/v1763866477/nhacmuong_zj6qyq.jpg"
               link="/nhac-cu"
               icon={
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
