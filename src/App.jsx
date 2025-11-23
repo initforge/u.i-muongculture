@@ -205,7 +205,7 @@ function AppContent() {
         }
         
         try {
-          console.log('[Audio] Attempting to play, readyState:', audio.readyState, 'unlocked:', audioUnlockedRef.current)
+          console.log('[Audio] Attempting to play, readyState:', audio.readyState, 'unlocked:', audioUnlocked)
           await audio.play()
           console.log('[Audio] Playing successfully')
         } catch (error) {
@@ -216,7 +216,7 @@ function AppContent() {
 
       // Try to play with multiple strategies
       const tryPlay = () => {
-        console.log('[Audio] Try play, readyState:', audio.readyState, 'paused:', audio.paused, 'unlocked:', audioUnlockedRef.current)
+        console.log('[Audio] Try play, readyState:', audio.readyState, 'paused:', audio.paused, 'unlocked:', audioUnlocked)
         
         // If audio is unlocked, try to play immediately
         if (audioUnlocked && audio.readyState >= 2 && audio.paused) {
@@ -293,7 +293,7 @@ function AppContent() {
       }
       
       try {
-        console.log('[Audio] Navigate to home - attempting to play, unlocked:', audioUnlockedRef.current)
+        console.log('[Audio] Navigate to home - attempting to play, unlocked:', audioUnlocked)
         await audio.play()
         console.log('[Audio] Navigate to home - playing successfully')
       } catch (error) {
