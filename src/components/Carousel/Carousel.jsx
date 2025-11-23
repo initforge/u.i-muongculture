@@ -37,8 +37,8 @@ const Carousel = ({ images, autoPlayInterval = 5000 }) => {
           >
             <div className="carousel-overlay">
               <div className="carousel-content">
-                <h2 className="carousel-title">E-BOOK NHÀ LANG, GIẤC MƠ HỒI SINH</h2>
-                <p className="carousel-subtitle">LANG HOUSE - THE DREAM OF REBIRTH</p>
+                <h2 className="carousel-title">GIỮ HỒN HÁT ĐÚM</h2>
+                <p className="carousel-subtitle">TRONG KỶ NGUYÊN SỐ</p>
               </div>
             </div>
           </div>

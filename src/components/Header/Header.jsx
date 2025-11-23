@@ -51,10 +51,10 @@ const Header = () => {
                   </svg>
                 </div>
                 <div className="logo-text-wrapper">
-                  <div className="logo-line-top">BẢO TÀNG KHÔNG GIAN</div>
+                  <div className="logo-line-top">GIỮ HỒN HÁT ĐÚM</div>
                   <div className="logo-line-bottom">
-                    <span className="logo-main">VĂN HÓA</span>
-                    <span className="logo-accent">MƯỜNG</span>
+                    <span className="logo-main">TRONG KỶ NGUYÊN</span>
+                    <span className="logo-accent">SỐ</span>
                   </div>
                 </div>
               </div>
