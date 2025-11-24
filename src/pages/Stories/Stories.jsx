@@ -32,13 +32,34 @@ const Stories = () => {
         setError(null)
         setLoadingProgress(0)
 
-        // Bước 1: Load PDF document
+        // Bước 1: Fetch PDF và convert sang blob URL để tránh 403
+        let pdfBlobUrl = null
+        try {
+          console.log('Fetching PDF from Vercel Blob Storage...')
+          const response = await fetch(PDF_URL, {
+            method: 'GET',
+            mode: 'cors',
+            credentials: 'omit',
+            headers: {
+              'Accept': 'application/pdf',
+            },
+          })
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+          }
+
+          const blob = await response.blob()
+          pdfBlobUrl = URL.createObjectURL(blob)
+          console.log('PDF fetched successfully, blob URL created')
+        } catch (fetchErr) {
+          console.error('Error fetching PDF:', fetchErr)
+          throw new Error(`Không thể tải file PDF từ server: ${fetchErr.message}`)
+        }
+
+        // Bước 2: Load PDF document từ blob URL
         const loadingTask = pdfjs.getDocument({
-          url: PDF_URL,
-          httpHeaders: {
-            'Accept': 'application/pdf',
-          },
-          withCredentials: false,
+          url: pdfBlobUrl,
           cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/cmaps/`,
           cMapPacked: true,
         })
@@ -108,6 +129,9 @@ const Stories = () => {
         setLoading(false)
         setLoadingProgress(100)
         console.log(`All ${totalPages} pages loaded and cached`)
+
+        // Cleanup blob URL sau khi load xong (giữ lại để dùng)
+        // Không revoke ngay vì có thể cần dùng lại
 
       } catch (err) {
         console.error('Error loading PDF:', err)
