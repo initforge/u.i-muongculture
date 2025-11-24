@@ -1,92 +1,102 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState, useEffect } from 'react'
+import { Document, Page, pdfjs } from 'react-pdf'
 import './Stories.css'
 
+// Cấu hình PDF.js worker - sử dụng CDN
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
+
+// PDF URL từ Vercel Blob Storage
+const PDF_URL = 'https://erub5hkiytu5lnuq.public.blob.vercel-storage.com/Giai%20%C4%91i%E1%BB%87u%20v%C6%B0%E1%BB%A3t%20thung%20l%C5%A9ng.pdf'
+
 const Stories = () => {
-  const iframeRef = useRef(null)
-  const [isBlocked, setIsBlocked] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const geminiUrl = 'https://gemini.google.com/share/f9e9248c32de'
+  const [numPages, setNumPages] = useState(null)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [pdfUrl, setPdfUrl] = useState(null)
 
-  // Try different proxy services (some may work, some may not)
-  const proxyUrls = [
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(geminiUrl)}`,
-    `https://cors-anywhere.herokuapp.com/${geminiUrl}`,
-    `https://thingproxy.freeboard.io/fetch/${geminiUrl}`,
-    geminiUrl // Direct URL as last resort
-  ]
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages)
+    setLoading(false)
+    setError(null)
+  }
 
-  const [currentProxyIndex, setCurrentProxyIndex] = useState(0)
+  function onDocumentLoadError(error) {
+    console.error('PDF load error:', error)
+    setError('Không thể tải file PDF. Vui lòng kiểm tra lại link.')
+    setLoading(false)
+  }
 
+  function goToPrevPage() {
+    setPageNumber(page => Math.max(1, page - 1))
+  }
+
+  function goToNextPage() {
+    setPageNumber(page => Math.min(numPages || 1, page + 1))
+  }
+
+  // Fetch PDF từ Vercel Blob và convert sang blob URL để tránh CORS issues
   useEffect(() => {
-    // Listen for iframe load errors
-    const handleError = () => {
-      setIsBlocked(true)
-      setIsLoading(false)
-      // Try next proxy if available
-      if (currentProxyIndex < proxyUrls.length - 1) {
-        setTimeout(() => {
-          setCurrentProxyIndex(prev => prev + 1)
-          setIsBlocked(false)
-          setIsLoading(true)
-        }, 2000)
+    if (!PDF_URL) {
+      setError('PDF URL chưa được cấu hình. Vui lòng upload file và cập nhật PDF_URL trong Stories.jsx')
+      setLoading(false)
+      return
+    }
+
+    let blobUrl = null
+    let isMounted = true
+
+    async function loadPdf() {
+      try {
+        setLoading(true)
+        setError(null)
+        
+        // Fetch PDF từ Vercel Blob Storage
+        // Public blob URL không cần token, nhưng cần mode: 'cors' để tránh CORS issues
+        const response = await fetch(PDF_URL, {
+          method: 'GET',
+          mode: 'cors', // Cho phép CORS
+          cache: 'default', // Cache để tăng tốc độ load
+          headers: {
+            'Accept': 'application/pdf',
+          },
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+
+        // Convert response sang blob
+        const blob = await response.blob()
+        
+        // Tạo blob URL từ blob
+        blobUrl = URL.createObjectURL(blob)
+        
+        if (isMounted) {
+          setPdfUrl(blobUrl)
+        } else {
+          // Nếu component đã unmount, cleanup ngay
+          URL.revokeObjectURL(blobUrl)
+        }
+      } catch (err) {
+        console.error('Error loading PDF:', err)
+        if (isMounted) {
+          setError(`Không thể tải file PDF: ${err.message}. Vui lòng kiểm tra lại link hoặc kết nối mạng.`)
+          setLoading(false)
+        }
       }
     }
 
-    const iframe = iframeRef.current
-    if (iframe) {
-      iframe.addEventListener('error', handleError)
-      
-      // Check if iframe is blocked after load
-      const checkBlocked = () => {
-        try {
-          const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document
-          if (!iframeDoc) {
-            // Likely blocked, but wait a bit more
-            setTimeout(() => {
-              try {
-                const doc = iframe.contentDocument || iframe.contentWindow?.document
-                if (!doc) {
-                  setIsBlocked(true)
-                  setIsLoading(false)
-                } else {
-                  setIsLoading(false)
-                }
-              } catch (e) {
-                setIsBlocked(true)
-                setIsLoading(false)
-              }
-            }, 2000)
-          } else {
-            setIsLoading(false)
-          }
-        } catch (e) {
-          // Cross-origin error - iframe is blocked
-          setIsBlocked(true)
-          setIsLoading(false)
-        }
-      }
+    loadPdf()
 
-      const handleLoad = () => {
-        setTimeout(checkBlocked, 1000)
-      }
-
-      iframe.addEventListener('load', handleLoad)
-      
-      // Timeout fallback
-      const timeout = setTimeout(() => {
-        if (isLoading) {
-          setIsBlocked(true)
-          setIsLoading(false)
-        }
-      }, 5000)
-
-      return () => {
-        iframe.removeEventListener('error', handleError)
-        iframe.removeEventListener('load', handleLoad)
-        clearTimeout(timeout)
+    // Cleanup function để revoke blob URL khi component unmount
+    return () => {
+      isMounted = false
+      if (blobUrl) {
+        URL.revokeObjectURL(blobUrl)
       }
     }
-  }, [currentProxyIndex, isLoading])
+  }, [])
 
   return (
     <div className="stories-page">
@@ -103,50 +113,71 @@ const Stories = () => {
             </p>
           </div>
 
-          <div className="story-embed">
-            <div className="embed-container">
-              {!isBlocked && (
-                <iframe
-                  ref={iframeRef}
-                  src={proxyUrls[currentProxyIndex]}
-                  title="Gemini Storybook - Truyện Mường"
-                  className="story-iframe"
-                  allow="fullscreen"
-                  allowFullScreen
-                  sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-top-navigation"
-                  style={{ display: isBlocked ? 'none' : 'block' }}
-                />
-              )}
-              {(isBlocked || isLoading) && (
-                <div className="iframe-overlay">
-                  <div className="overlay-content">
-                    {isLoading && currentProxyIndex < proxyUrls.length - 1 ? (
-                      <>
-                        <div className="loading-spinner"></div>
-                        <p className="overlay-text">Đang thử kết nối qua proxy {currentProxyIndex + 1}/{proxyUrls.length}...</p>
-                      </>
-                    ) : (
-                      <>
-                        <p className="overlay-text">Không thể hiển thị trực tiếp</p>
-                        <p className="overlay-text-small">
-                          Gemini không cho phép embed trong iframe do chính sách bảo mật. 
-                          Vui lòng mở trong tab mới để xem truyện.
-                        </p>
-                        <a 
-                          href={geminiUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="btn btn-primary"
-                        >
-                          📖 Mở truyện trên Gemini
-                        </a>
-                      </>
-                    )}
-                  </div>
+          {!pdfUrl ? (
+            <div className="pdf-placeholder">
+              <p>Đang tải PDF...</p>
+            </div>
+          ) : (
+            <div className="pdf-viewer-container">
+              {loading && (
+                <div className="pdf-loading">
+                  <div className="loading-spinner"></div>
+                  <p>Đang tải truyện...</p>
                 </div>
               )}
+
+              {error && (
+                <div className="pdf-error">
+                  <p>{error}</p>
+                </div>
+              )}
+              
+              <div className="pdf-controls">
+                <button 
+                  onClick={goToPrevPage} 
+                  disabled={pageNumber <= 1 || loading}
+                  className="pdf-nav-btn pdf-nav-prev"
+                  aria-label="Trang trước"
+                >
+                  ←
+                </button>
+                
+                <span className="pdf-page-info">
+                  {numPages ? `Trang ${pageNumber} / ${numPages}` : 'Đang tải...'}
+                </span>
+                
+                <button 
+                  onClick={goToNextPage} 
+                  disabled={pageNumber >= (numPages || 1) || loading}
+                  className="pdf-nav-btn pdf-nav-next"
+                  aria-label="Trang sau"
+                >
+                  →
+                </button>
+              </div>
+
+              <div className="pdf-document-wrapper">
+                <Document
+                  file={pdfUrl}
+                  onLoadSuccess={onDocumentLoadSuccess}
+                  onLoadError={onDocumentLoadError}
+                  loading={
+                    <div className="pdf-loading">
+                      <div className="loading-spinner"></div>
+                    </div>
+                  }
+                >
+                  <Page 
+                    pageNumber={pageNumber} 
+                    className="pdf-page"
+                    renderTextLayer={true}
+                    renderAnnotationLayer={true}
+                    width={Math.min(900, window.innerWidth - 80)}
+                  />
+                </Document>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
     </div>
@@ -154,4 +185,3 @@ const Stories = () => {
 }
 
 export default Stories
-

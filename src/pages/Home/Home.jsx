@@ -111,8 +111,8 @@ const Home = () => {
       <section className="hero-section">
         <div className="container">
           <div className="hero-media-grid">
-            <div className="carousel-section">
-              <Carousel images={carouselImages} autoPlayInterval={5000} />
+          <div className="carousel-section">
+            <Carousel images={carouselImages} autoPlayInterval={5000} />
             </div>
             <div className="video-section">
               <div className="video-wrapper">
