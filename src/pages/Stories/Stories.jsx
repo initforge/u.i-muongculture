@@ -13,6 +13,7 @@ const Stories = () => {
   const [numPages, setNumPages] = useState(null)
   const [pageNumber, setPageNumber] = useState(1)
   const [loading, setLoading] = useState(true)
+  const [pageLoading, setPageLoading] = useState(false)
   const [error, setError] = useState(null)
   const [pdfUrl, setPdfUrl] = useState(null)
 
@@ -33,12 +34,29 @@ const Stories = () => {
     setLoading(false)
   }
 
+  function onPageLoadSuccess() {
+    setPageLoading(false)
+    setError(null)
+  }
+
+  function onPageLoadError(error) {
+    console.error('Page load error:', error)
+    setPageLoading(false)
+    setError(`Không thể tải trang ${pageNumber}: ${error?.message || 'Lỗi không xác định'}`)
+  }
+
   function goToPrevPage() {
-    setPageNumber(page => Math.max(1, page - 1))
+    if (pageNumber > 1) {
+      setPageLoading(true)
+      setPageNumber(page => Math.max(1, page - 1))
+    }
   }
 
   function goToNextPage() {
-    setPageNumber(page => Math.min(numPages || 1, page + 1))
+    if (pageNumber < (numPages || 1)) {
+      setPageLoading(true)
+      setPageNumber(page => Math.min(numPages || 1, page + 1))
+    }
   }
 
   // Sử dụng trực tiếp URL từ Vercel Blob Storage
@@ -102,14 +120,14 @@ const Stories = () => {
             </div>
           ) : (
             <div className="pdf-viewer-container">
-              {loading && (
+              {(loading || pageLoading) && (
                 <div className="pdf-loading">
                   <div className="loading-spinner"></div>
-                  <p>Đang tải truyện...</p>
+                  <p>{loading ? 'Đang tải truyện...' : `Đang tải trang ${pageNumber}...`}</p>
                 </div>
               )}
 
-              {error && (
+              {error && !pageLoading && (
                 <div className="pdf-error">
                   <p>{error}</p>
                 </div>
@@ -156,10 +174,19 @@ const Stories = () => {
                   }
                 >
                   <Page 
+                    key={`page-${pageNumber}`}
                     pageNumber={pageNumber} 
                     className="pdf-page"
                     renderTextLayer={false}
                     renderAnnotationLayer={false}
+                    onLoadSuccess={onPageLoadSuccess}
+                    onLoadError={onPageLoadError}
+                    loading={
+                      <div className="pdf-loading">
+                        <div className="loading-spinner"></div>
+                        <p>Đang tải trang {pageNumber}...</p>
+                      </div>
+                    }
                     width={Math.min(900, window.innerWidth - 80)}
                   />
                 </Document>
