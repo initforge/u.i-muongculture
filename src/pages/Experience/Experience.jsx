@@ -31,11 +31,10 @@ const Experience = () => {
           <div className="experience-features">
             <h3>Tính năng trải nghiệm</h3>
             <ul className="features-list">
-              <li>Tham quan không gian bảo tàng ảo chân thực</li>
-              <li>Xem các hiện vật văn hóa từ nhiều góc độ</li>
-              <li>Tìm hiểu về kiến trúc nhà sàn Mường</li>
-              <li>Khám phá các hoạt động văn hóa truyền thống</li>
-              <li>Tương tác với các yếu tố trong không gian ảo</li>
+              <li>Tham ra không gian bảo tảng ảo chân thực</li>
+              <li>Xem các hoạt động trải nghiệm nhiều góc độ</li>
+              <li>Khám phá các hoạt động văn hóa truyền thống.</li>
+              <li>Tương tác các yếu tố trong không gian ảo.</li>
             </ul>
           </div>
         </div>

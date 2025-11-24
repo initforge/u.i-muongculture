@@ -35,12 +35,6 @@ const Carousel = ({ images, autoPlayInterval = 5000 }) => {
             className={`carousel-slide ${index === currentIndex ? 'active' : ''}`}
             style={{ backgroundImage: `url(${image})` }}
           >
-            <div className="carousel-overlay">
-              <div className="carousel-content">
-                <h2 className="carousel-title">GIỮ HỒN HÁT ĐÚM</h2>
-                <p className="carousel-subtitle">TRONG KỶ NGUYÊN SỐ</p>
-              </div>
-            </div>
           </div>
         ))}
       </div>

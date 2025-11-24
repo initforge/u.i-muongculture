@@ -92,13 +92,16 @@ const Home = () => {
     }
   }, [audio])
   const carouselImages = [
-    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866463/bao1_dh3dg5.jpg',
-    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866461/bao3_d3blch.jpg',
-    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866461/bao4_fb7kiv.jpg',
-    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866462/bao5_rgwx6y.jpg',
-    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866464/bao6_hptmwj.jpg',
-    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866467/bao7_ygoll5.jpg',
-    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763866465/bao9_j5fo6v.jpg'
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763968048/anhchaytrangchu1_egcyqw.jpg',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763968050/anhchaytrangchu2_imb6jc.png',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763968053/anhchaytrangchu3_pdr3rw.png',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763968051/anhchaytrangchu4_l98w48.png',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763968044/anhchaytrangchu5_msen7w.png',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763968043/anhchaytrangchu6_qwsxnx.png',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763968044/anhchaytrangchu7_h3huzx.png',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763968043/anhchaytrangchu8_xdp4gm.png',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763968046/anhchaytrangchu9_iwkvfi.jpg',
+    'https://res.cloudinary.com/dghawsj8e/image/upload/v1763968047/anhchaytrangchu10_rwdext.jpg'
   ]
 
   const researchNews = newsData.filter(news => news.category === 'research')
