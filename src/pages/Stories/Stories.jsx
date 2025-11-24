@@ -18,7 +18,7 @@ const Stories = () => {
   const canvasRef = useRef(null)
   const pageCacheRef = useRef(new Map()) // Cache các page đã render
 
-  // Load PDF document
+  // Load PDF document và preload page đầu tiên
   useEffect(() => {
     if (!PDF_URL) {
       setError('PDF URL chưa được cấu hình.')
@@ -29,6 +29,7 @@ const Stories = () => {
     async function loadPdf() {
       try {
         setLoading(true)
+        setPageLoading(true)
         setError(null)
 
         // Load PDF document
@@ -41,24 +42,79 @@ const Stories = () => {
         const pdf = await loadingTask.promise
         setNumPages(pdf.numPages)
         setPdfDoc(pdf)
-        setLoading(false)
-
+        
         console.log(`PDF loaded: ${pdf.numPages} pages`)
+
+        // Preload page đầu tiên ngay khi document load xong
+        if (canvasRef.current) {
+          try {
+            const page = await pdf.getPage(1)
+            const viewport = page.getViewport({ scale: 1.0 })
+            const canvas = canvasRef.current
+            const context = canvas.getContext('2d')
+            
+            const maxWidth = Math.min(900, window.innerWidth - 80)
+            const scale = maxWidth / viewport.width
+            const scaledViewport = page.getViewport({ scale })
+
+            canvas.height = scaledViewport.height
+            canvas.width = scaledViewport.width
+
+            const renderContext = {
+              canvasContext: context,
+              viewport: scaledViewport,
+            }
+
+            await page.render(renderContext).promise
+
+            // Cache page đầu tiên
+            const cachedCanvas = document.createElement('canvas')
+            cachedCanvas.width = canvas.width
+            cachedCanvas.height = canvas.height
+            const cachedCtx = cachedCanvas.getContext('2d')
+            cachedCtx.drawImage(canvas, 0, 0)
+            pageCacheRef.current.set(1, cachedCanvas)
+
+            setLoading(false)
+            setPageLoading(false)
+            console.log('Page 1 preloaded and rendered')
+          } catch (pageErr) {
+            console.error('Error preloading page 1:', pageErr)
+            setError(`Không thể tải trang đầu tiên: ${pageErr.message}`)
+            setLoading(false)
+            setPageLoading(false)
+          }
+        } else {
+          setLoading(false)
+          // Canvas chưa sẵn sàng, sẽ render trong useEffect khác
+        }
       } catch (err) {
         console.error('Error loading PDF:', err)
         setError(`Không thể tải file PDF: ${err.message}`)
         setLoading(false)
+        setPageLoading(false)
       }
     }
 
     loadPdf()
   }, [])
 
-  // Render page riêng biệt
+  // Render page khi chuyển trang (trừ page 1 đã preload)
   useEffect(() => {
     if (!pdfDoc || !canvasRef.current || !pageNumber) return
+    
+    // Page 1 đã được preload trong useEffect đầu tiên
+    if (pageNumber === 1 && pageCacheRef.current.has(1)) {
+      const cachedCanvas = pageCacheRef.current.get(1)
+      const currentCanvas = canvasRef.current
+      const ctx = currentCanvas.getContext('2d')
+      ctx.clearRect(0, 0, currentCanvas.width, currentCanvas.height)
+      ctx.drawImage(cachedCanvas, 0, 0)
+      setPageLoading(false)
+      return
+    }
 
-    // Kiểm tra cache
+    // Kiểm tra cache cho các page khác
     if (pageCacheRef.current.has(pageNumber)) {
       const cachedCanvas = pageCacheRef.current.get(pageNumber)
       const currentCanvas = canvasRef.current
@@ -145,69 +201,56 @@ const Stories = () => {
             </p>
           </div>
 
-          {loading ? (
-            <div className="pdf-placeholder">
+          <div className="pdf-viewer-container">
+            {(loading || pageLoading) && (
               <div className="pdf-loading">
                 <div className="loading-spinner"></div>
-                <p>Đang tải PDF...</p>
+                <p>{loading ? 'Đang tải PDF...' : `Đang tải trang ${pageNumber}...`}</p>
               </div>
-            </div>
-          ) : error && !pageLoading ? (
-            <div className="pdf-error">
-              <p>{error}</p>
-            </div>
-          ) : (
-            <div className="pdf-viewer-container">
-              {pageLoading && (
-                <div className="pdf-loading">
-                  <div className="loading-spinner"></div>
-                  <p>Đang tải trang {pageNumber}...</p>
-                </div>
-              )}
+            )}
 
-              {error && pageLoading && (
-                <div className="pdf-error">
-                  <p>{error}</p>
-                </div>
-              )}
+            {error && !loading && (
+              <div className="pdf-error">
+                <p>{error}</p>
+              </div>
+            )}
+            
+            <div className="pdf-controls">
+              <button 
+                onClick={goToPrevPage} 
+                disabled={pageNumber <= 1 || loading}
+                className="pdf-nav-btn pdf-nav-prev"
+                aria-label="Trang trước"
+              >
+                ←
+              </button>
               
-              <div className="pdf-controls">
-                <button 
-                  onClick={goToPrevPage} 
-                  disabled={pageNumber <= 1 || loading}
-                  className="pdf-nav-btn pdf-nav-prev"
-                  aria-label="Trang trước"
-                >
-                  ←
-                </button>
-                
-                <span className="pdf-page-info">
-                  {numPages ? `Trang ${pageNumber} / ${numPages}` : 'Đang tải...'}
-                </span>
-                
-                <button 
-                  onClick={goToNextPage} 
-                  disabled={pageNumber >= (numPages || 1) || loading}
-                  className="pdf-nav-btn pdf-nav-next"
-                  aria-label="Trang sau"
-                >
-                  →
-                </button>
-              </div>
-
-              <div className="pdf-document-wrapper">
-                <canvas 
-                  ref={canvasRef}
-                  className="pdf-page"
-                  style={{
-                    display: pageLoading ? 'none' : 'block',
-                    maxWidth: '100%',
-                    height: 'auto',
-                  }}
-                />
-              </div>
+              <span className="pdf-page-info">
+                {numPages ? `Trang ${pageNumber} / ${numPages}` : 'Đang tải...'}
+              </span>
+              
+              <button 
+                onClick={goToNextPage} 
+                disabled={pageNumber >= (numPages || 1) || loading}
+                className="pdf-nav-btn pdf-nav-next"
+                aria-label="Trang sau"
+              >
+                →
+              </button>
             </div>
-          )}
+
+            <div className="pdf-document-wrapper">
+              <canvas 
+                ref={canvasRef}
+                className="pdf-page"
+                style={{
+                  display: (loading || pageLoading) ? 'none' : 'block',
+                  maxWidth: '100%',
+                  height: 'auto',
+                }}
+              />
+            </div>
+          </div>
         </div>
       </section>
     </div>
