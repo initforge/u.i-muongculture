@@ -17,6 +17,7 @@ const Stories = () => {
   const [pdfDoc, setPdfDoc] = useState(null)
   const canvasRef = useRef(null)
   const pageCacheRef = useRef(new Map()) // Cache các page đã render
+  const renderingRef = useRef(false) // Prevent multiple renders
 
   // Load PDF document và preload page đầu tiên
   useEffect(() => {
@@ -32,9 +33,13 @@ const Stories = () => {
         setPageLoading(true)
         setError(null)
 
-        // Load PDF document
+        // Load PDF document với httpHeaders để tránh 403
         const loadingTask = pdfjsLib.getDocument({
           url: PDF_URL,
+          httpHeaders: {
+            'Accept': 'application/pdf',
+          },
+          withCredentials: false,
           cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/cmaps/`,
           cMapPacked: true,
         })
@@ -114,7 +119,7 @@ const Stories = () => {
       return
     }
 
-    // Kiểm tra cache cho các page khác
+    // Kiểm tra cache cho các page khác - hiển thị ngay lập tức
     if (pageCacheRef.current.has(pageNumber)) {
       const cachedCanvas = pageCacheRef.current.get(pageNumber)
       const currentCanvas = canvasRef.current
@@ -122,12 +127,18 @@ const Stories = () => {
       ctx.clearRect(0, 0, currentCanvas.width, currentCanvas.height)
       ctx.drawImage(cachedCanvas, 0, 0)
       setPageLoading(false)
+      renderingRef.current = false
       return
     }
 
+    // Prevent multiple simultaneous renders
+    if (renderingRef.current) return
+    renderingRef.current = true
+
     async function renderPage() {
       try {
-        setPageLoading(true)
+        // Không set pageLoading = true ngay, giữ canvas hiển thị
+        // Chỉ hiển thị loading overlay nhẹ
         setError(null)
 
         // Get page
@@ -163,16 +174,75 @@ const Stories = () => {
         pageCacheRef.current.set(pageNumber, cachedCanvas)
 
         setPageLoading(false)
+        renderingRef.current = false
         console.log(`Page ${pageNumber} rendered`)
       } catch (err) {
         console.error(`Error rendering page ${pageNumber}:`, err)
         setError(`Không thể tải trang ${pageNumber}: ${err.message}`)
         setPageLoading(false)
+        renderingRef.current = false
       }
     }
 
     renderPage()
   }, [pdfDoc, pageNumber])
+
+  // Preload các page xung quanh để chuyển trang nhanh hơn
+  useEffect(() => {
+    if (!pdfDoc || !numPages) return
+
+    async function preloadAdjacentPages() {
+      const pagesToPreload = []
+      
+      // Preload page trước và sau
+      if (pageNumber > 1 && !pageCacheRef.current.has(pageNumber - 1)) {
+        pagesToPreload.push(pageNumber - 1)
+      }
+      if (pageNumber < numPages && !pageCacheRef.current.has(pageNumber + 1)) {
+        pagesToPreload.push(pageNumber + 1)
+      }
+
+      // Preload trong background
+      for (const pageNum of pagesToPreload) {
+        try {
+          const page = await pdfDoc.getPage(pageNum)
+          const viewport = page.getViewport({ scale: 1.0 })
+          const maxWidth = Math.min(900, window.innerWidth - 80)
+          const scale = maxWidth / viewport.width
+          const scaledViewport = page.getViewport({ scale })
+
+          // Tạo canvas tạm để render
+          const tempCanvas = document.createElement('canvas')
+          tempCanvas.width = scaledViewport.width
+          tempCanvas.height = scaledViewport.height
+          const tempCtx = tempCanvas.getContext('2d')
+
+          const renderContext = {
+            canvasContext: tempCtx,
+            viewport: scaledViewport,
+          }
+
+          await page.render(renderContext).promise
+
+          // Cache page đã render
+          const cachedCanvas = document.createElement('canvas')
+          cachedCanvas.width = tempCanvas.width
+          cachedCanvas.height = tempCanvas.height
+          const cachedCtx = cachedCanvas.getContext('2d')
+          cachedCtx.drawImage(tempCanvas, 0, 0)
+          pageCacheRef.current.set(pageNum, cachedCanvas)
+
+          console.log(`Page ${pageNum} preloaded`)
+        } catch (err) {
+          console.warn(`Failed to preload page ${pageNum}:`, err)
+        }
+      }
+    }
+
+    // Preload sau một chút để không ảnh hưởng đến page hiện tại
+    const timeout = setTimeout(preloadAdjacentPages, 500)
+    return () => clearTimeout(timeout)
+  }, [pdfDoc, pageNumber, numPages])
 
   function goToPrevPage() {
     if (pageNumber > 1) {
@@ -239,16 +309,34 @@ const Stories = () => {
               </button>
             </div>
 
-            <div className="pdf-document-wrapper">
+            <div className="pdf-document-wrapper" style={{ position: 'relative' }}>
               <canvas 
                 ref={canvasRef}
                 className="pdf-page"
                 style={{
-                  display: (loading || pageLoading) ? 'none' : 'block',
+                  display: loading ? 'none' : 'block', // Chỉ ẩn khi đang load document, không ẩn khi chuyển trang
                   maxWidth: '100%',
                   height: 'auto',
+                  opacity: pageLoading ? 0.7 : 1, // Làm mờ nhẹ khi đang load page mới
+                  transition: 'opacity 0.2s',
                 }}
               />
+              {pageLoading && !loading && (
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  pointerEvents: 'none',
+                  zIndex: 10,
+                }}>
+                  <div className="loading-spinner" style={{ 
+                    width: '40px', 
+                    height: '40px',
+                    borderWidth: '3px',
+                  }}></div>
+                </div>
+              )}
             </div>
           </div>
         </div>
