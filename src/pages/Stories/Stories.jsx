@@ -12,14 +12,13 @@ const Stories = () => {
   const [numPages, setNumPages] = useState(null)
   const [pageNumber, setPageNumber] = useState(1)
   const [loading, setLoading] = useState(true)
-  const [pageLoading, setPageLoading] = useState(false)
   const [error, setError] = useState(null)
   const [pdfDoc, setPdfDoc] = useState(null)
+  const [loadingProgress, setLoadingProgress] = useState(0)
   const canvasRef = useRef(null)
-  const pageCacheRef = useRef(new Map()) // Cache các page đã render
-  const renderingRef = useRef(false) // Prevent multiple renders
+  const pageCacheRef = useRef(new Map()) // Cache tất cả các page đã render
 
-  // Load PDF document và preload page đầu tiên
+  // Load PDF document và render TẤT CẢ các page ngay một lần
   useEffect(() => {
     if (!PDF_URL) {
       setError('PDF URL chưa được cấu hình.')
@@ -27,13 +26,13 @@ const Stories = () => {
       return
     }
 
-    async function loadPdf() {
+    async function loadAndRenderAllPages() {
       try {
         setLoading(true)
-        setPageLoading(true)
         setError(null)
+        setLoadingProgress(0)
 
-        // Load PDF document với httpHeaders để tránh 403
+        // Bước 1: Load PDF document
         const loadingTask = pdfjsLib.getDocument({
           url: PDF_URL,
           httpHeaders: {
@@ -45,204 +44,105 @@ const Stories = () => {
         })
 
         const pdf = await loadingTask.promise
-        setNumPages(pdf.numPages)
+        const totalPages = pdf.numPages
+        setNumPages(totalPages)
         setPdfDoc(pdf)
         
-        console.log(`PDF loaded: ${pdf.numPages} pages`)
+        console.log(`PDF loaded: ${totalPages} pages`)
 
-        // Preload page đầu tiên ngay khi document load xong
-        if (canvasRef.current) {
+        // Bước 2: Render TẤT CẢ các page và cache lại
+        const maxWidth = Math.min(900, window.innerWidth - 80)
+        
+        for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
           try {
-            const page = await pdf.getPage(1)
+            // Get page
+            const page = await pdf.getPage(pageNum)
             const viewport = page.getViewport({ scale: 1.0 })
-            const canvas = canvasRef.current
-            const context = canvas.getContext('2d')
-            
-            const maxWidth = Math.min(900, window.innerWidth - 80)
             const scale = maxWidth / viewport.width
             const scaledViewport = page.getViewport({ scale })
 
-            canvas.height = scaledViewport.height
-            canvas.width = scaledViewport.width
+            // Tạo canvas tạm để render
+            const tempCanvas = document.createElement('canvas')
+            tempCanvas.width = scaledViewport.width
+            tempCanvas.height = scaledViewport.height
+            const tempCtx = tempCanvas.getContext('2d')
 
             const renderContext = {
-              canvasContext: context,
+              canvasContext: tempCtx,
               viewport: scaledViewport,
             }
 
+            // Render page
             await page.render(renderContext).promise
 
-            // Cache page đầu tiên
+            // Cache page đã render
             const cachedCanvas = document.createElement('canvas')
-            cachedCanvas.width = canvas.width
-            cachedCanvas.height = canvas.height
+            cachedCanvas.width = tempCanvas.width
+            cachedCanvas.height = tempCanvas.height
             const cachedCtx = cachedCanvas.getContext('2d')
-            cachedCtx.drawImage(canvas, 0, 0)
-            pageCacheRef.current.set(1, cachedCanvas)
+            cachedCtx.drawImage(tempCanvas, 0, 0)
+            pageCacheRef.current.set(pageNum, cachedCanvas)
 
-            setLoading(false)
-            setPageLoading(false)
-            console.log('Page 1 preloaded and rendered')
+            // Cập nhật progress
+            const progress = Math.round((pageNum / totalPages) * 100)
+            setLoadingProgress(progress)
+
+            console.log(`Page ${pageNum}/${totalPages} rendered (${progress}%)`)
+
+            // Nếu là page đầu tiên, hiển thị ngay lập tức
+            if (pageNum === 1 && canvasRef.current) {
+              const currentCanvas = canvasRef.current
+              currentCanvas.width = cachedCanvas.width
+              currentCanvas.height = cachedCanvas.height
+              const ctx = currentCanvas.getContext('2d')
+              ctx.drawImage(cachedCanvas, 0, 0)
+              setLoading(false) // Hiển thị page 1 ngay, các page khác load trong background
+            }
           } catch (pageErr) {
-            console.error('Error preloading page 1:', pageErr)
-            setError(`Không thể tải trang đầu tiên: ${pageErr.message}`)
-            setLoading(false)
-            setPageLoading(false)
+            console.error(`Error rendering page ${pageNum}:`, pageErr)
+            // Tiếp tục render các page khác, không dừng lại
           }
-        } else {
-          setLoading(false)
-          // Canvas chưa sẵn sàng, sẽ render trong useEffect khác
         }
+
+        // Tất cả page đã được render và cache
+        setLoading(false)
+        setLoadingProgress(100)
+        console.log(`All ${totalPages} pages loaded and cached`)
+
       } catch (err) {
         console.error('Error loading PDF:', err)
         setError(`Không thể tải file PDF: ${err.message}`)
         setLoading(false)
-        setPageLoading(false)
       }
     }
 
-    loadPdf()
+    loadAndRenderAllPages()
   }, [])
 
-  // Render page khi chuyển trang (trừ page 1 đã preload)
+  // Hiển thị page từ cache khi chuyển trang
   useEffect(() => {
-    if (!pdfDoc || !canvasRef.current || !pageNumber) return
-    
-    // Page 1 đã được preload trong useEffect đầu tiên
-    if (pageNumber === 1 && pageCacheRef.current.has(1)) {
-      const cachedCanvas = pageCacheRef.current.get(1)
-      const currentCanvas = canvasRef.current
-      const ctx = currentCanvas.getContext('2d')
-      ctx.clearRect(0, 0, currentCanvas.width, currentCanvas.height)
-      ctx.drawImage(cachedCanvas, 0, 0)
-      setPageLoading(false)
-      return
-    }
+    if (!canvasRef.current || !pageNumber) return
 
-    // Kiểm tra cache cho các page khác - hiển thị ngay lập tức
+    // Kiểm tra cache - tất cả page đã được cache
     if (pageCacheRef.current.has(pageNumber)) {
       const cachedCanvas = pageCacheRef.current.get(pageNumber)
       const currentCanvas = canvasRef.current
       const ctx = currentCanvas.getContext('2d')
+      
+      // Set canvas size
+      currentCanvas.width = cachedCanvas.width
+      currentCanvas.height = cachedCanvas.height
+      
+      // Draw từ cache
       ctx.clearRect(0, 0, currentCanvas.width, currentCanvas.height)
       ctx.drawImage(cachedCanvas, 0, 0)
-      setPageLoading(false)
-      renderingRef.current = false
-      return
-    }
-
-    // Prevent multiple simultaneous renders
-    if (renderingRef.current) return
-    renderingRef.current = true
-
-    async function renderPage() {
-      try {
-        // Không set pageLoading = true ngay, giữ canvas hiển thị
-        // Chỉ hiển thị loading overlay nhẹ
-        setError(null)
-
-        // Get page
-        const page = await pdfDoc.getPage(pageNumber)
-        
-        // Tính toán scale để fit width
-        const viewport = page.getViewport({ scale: 1.0 })
-        const canvas = canvasRef.current
-        const context = canvas.getContext('2d')
-        
-        const maxWidth = Math.min(900, window.innerWidth - 80)
-        const scale = maxWidth / viewport.width
-        const scaledViewport = page.getViewport({ scale })
-
-        // Set canvas size
-        canvas.height = scaledViewport.height
-        canvas.width = scaledViewport.width
-
-        // Render page
-        const renderContext = {
-          canvasContext: context,
-          viewport: scaledViewport,
-        }
-
-        await page.render(renderContext).promise
-
-        // Cache page đã render
-        const cachedCanvas = document.createElement('canvas')
-        cachedCanvas.width = canvas.width
-        cachedCanvas.height = canvas.height
-        const cachedCtx = cachedCanvas.getContext('2d')
-        cachedCtx.drawImage(canvas, 0, 0)
-        pageCacheRef.current.set(pageNumber, cachedCanvas)
-
-        setPageLoading(false)
-        renderingRef.current = false
-        console.log(`Page ${pageNumber} rendered`)
-      } catch (err) {
-        console.error(`Error rendering page ${pageNumber}:`, err)
-        setError(`Không thể tải trang ${pageNumber}: ${err.message}`)
-        setPageLoading(false)
-        renderingRef.current = false
-      }
-    }
-
-    renderPage()
-  }, [pdfDoc, pageNumber])
-
-  // Preload các page xung quanh để chuyển trang nhanh hơn
-  useEffect(() => {
-    if (!pdfDoc || !numPages) return
-
-    async function preloadAdjacentPages() {
-      const pagesToPreload = []
       
-      // Preload page trước và sau
-      if (pageNumber > 1 && !pageCacheRef.current.has(pageNumber - 1)) {
-        pagesToPreload.push(pageNumber - 1)
-      }
-      if (pageNumber < numPages && !pageCacheRef.current.has(pageNumber + 1)) {
-        pagesToPreload.push(pageNumber + 1)
-      }
-
-      // Preload trong background
-      for (const pageNum of pagesToPreload) {
-        try {
-          const page = await pdfDoc.getPage(pageNum)
-          const viewport = page.getViewport({ scale: 1.0 })
-          const maxWidth = Math.min(900, window.innerWidth - 80)
-          const scale = maxWidth / viewport.width
-          const scaledViewport = page.getViewport({ scale })
-
-          // Tạo canvas tạm để render
-          const tempCanvas = document.createElement('canvas')
-          tempCanvas.width = scaledViewport.width
-          tempCanvas.height = scaledViewport.height
-          const tempCtx = tempCanvas.getContext('2d')
-
-          const renderContext = {
-            canvasContext: tempCtx,
-            viewport: scaledViewport,
-          }
-
-          await page.render(renderContext).promise
-
-          // Cache page đã render
-          const cachedCanvas = document.createElement('canvas')
-          cachedCanvas.width = tempCanvas.width
-          cachedCanvas.height = tempCanvas.height
-          const cachedCtx = cachedCanvas.getContext('2d')
-          cachedCtx.drawImage(tempCanvas, 0, 0)
-          pageCacheRef.current.set(pageNum, cachedCanvas)
-
-          console.log(`Page ${pageNum} preloaded`)
-        } catch (err) {
-          console.warn(`Failed to preload page ${pageNum}:`, err)
-        }
-      }
+      console.log(`Page ${pageNumber} displayed from cache`)
+    } else {
+      // Nếu chưa có trong cache (không nên xảy ra nếu load đúng)
+      console.warn(`Page ${pageNumber} not in cache yet`)
     }
-
-    // Preload sau một chút để không ảnh hưởng đến page hiện tại
-    const timeout = setTimeout(preloadAdjacentPages, 500)
-    return () => clearTimeout(timeout)
-  }, [pdfDoc, pageNumber, numPages])
+  }, [pageNumber])
 
   function goToPrevPage() {
     if (pageNumber > 1) {
@@ -272,14 +172,31 @@ const Stories = () => {
           </div>
 
           <div className="pdf-viewer-container">
-            {(loading || pageLoading) && (
+            {loading && (
               <div className="pdf-loading">
                 <div className="loading-spinner"></div>
-                <p>{loading ? 'Đang tải PDF...' : `Đang tải trang ${pageNumber}...`}</p>
+                <p>Đang tải PDF... {loadingProgress > 0 && `${loadingProgress}%`}</p>
+                {loadingProgress > 0 && (
+                  <div style={{
+                    width: '300px',
+                    height: '4px',
+                    backgroundColor: 'rgba(139, 69, 19, 0.2)',
+                    borderRadius: '2px',
+                    marginTop: '1rem',
+                    overflow: 'hidden',
+                  }}>
+                    <div style={{
+                      width: `${loadingProgress}%`,
+                      height: '100%',
+                      backgroundColor: 'var(--color-primary)',
+                      transition: 'width 0.3s',
+                    }}></div>
+                  </div>
+                )}
               </div>
             )}
 
-            {error && !loading && (
+            {error && (
               <div className="pdf-error">
                 <p>{error}</p>
               </div>
@@ -309,34 +226,16 @@ const Stories = () => {
               </button>
             </div>
 
-            <div className="pdf-document-wrapper" style={{ position: 'relative' }}>
+            <div className="pdf-document-wrapper">
               <canvas 
                 ref={canvasRef}
                 className="pdf-page"
                 style={{
-                  display: loading ? 'none' : 'block', // Chỉ ẩn khi đang load document, không ẩn khi chuyển trang
+                  display: loading ? 'none' : 'block',
                   maxWidth: '100%',
                   height: 'auto',
-                  opacity: pageLoading ? 0.7 : 1, // Làm mờ nhẹ khi đang load page mới
-                  transition: 'opacity 0.2s',
                 }}
               />
-              {pageLoading && !loading && (
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  pointerEvents: 'none',
-                  zIndex: 10,
-                }}>
-                  <div className="loading-spinner" style={{ 
-                    width: '40px', 
-                    height: '40px',
-                    borderWidth: '3px',
-                  }}></div>
-                </div>
-              )}
             </div>
           </div>
         </div>
