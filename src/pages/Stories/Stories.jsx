@@ -24,7 +24,12 @@ const Stories = () => {
 
   function onDocumentLoadError(error) {
     console.error('PDF load error:', error)
-    setError('Không thể tải file PDF. Vui lòng kiểm tra lại link.')
+    console.error('Error details:', {
+      message: error?.message,
+      name: error?.name,
+      stack: error?.stack
+    })
+    setError(`Không thể tải file PDF: ${error?.message || 'Lỗi không xác định'}. Vui lòng kiểm tra lại link hoặc thử lại sau.`)
     setLoading(false)
   }
 
@@ -36,7 +41,8 @@ const Stories = () => {
     setPageNumber(page => Math.min(numPages || 1, page + 1))
   }
 
-  // Fetch PDF từ Vercel Blob và convert sang blob URL để tránh CORS issues
+  // Sử dụng trực tiếp URL từ Vercel Blob Storage
+  // Với file lớn (190MB), dùng trực tiếp URL sẽ tốt hơn blob URL
   useEffect(() => {
     if (!PDF_URL) {
       setError('PDF URL chưa được cấu hình. Vui lòng upload file và cập nhật PDF_URL trong Stories.jsx')
@@ -44,59 +50,34 @@ const Stories = () => {
       return
     }
 
-    let blobUrl = null
-    let isMounted = true
-
-    async function loadPdf() {
+    // Test xem URL có accessible không
+    async function testUrl() {
       try {
-        setLoading(true)
-        setError(null)
-        
-        // Fetch PDF từ Vercel Blob Storage
-        // Public blob URL không cần token, nhưng cần mode: 'cors' để tránh CORS issues
-        const response = await fetch(PDF_URL, {
-          method: 'GET',
-          mode: 'cors', // Cho phép CORS
-          cache: 'default', // Cache để tăng tốc độ load
-          headers: {
-            'Accept': 'application/pdf',
-          },
+        const testResponse = await fetch(PDF_URL, {
+          method: 'HEAD',
+          mode: 'cors',
         })
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-
-        // Convert response sang blob
-        const blob = await response.blob()
         
-        // Tạo blob URL từ blob
-        blobUrl = URL.createObjectURL(blob)
-        
-        if (isMounted) {
-          setPdfUrl(blobUrl)
-        } else {
-          // Nếu component đã unmount, cleanup ngay
-          URL.revokeObjectURL(blobUrl)
+        if (!testResponse.ok) {
+          throw new Error(`URL không accessible: ${testResponse.status}`)
         }
+        
+        console.log('PDF URL is accessible:', {
+          status: testResponse.status,
+          contentType: testResponse.headers.get('content-type'),
+          contentLength: testResponse.headers.get('content-length')
+        })
+        
+        // Set URL trực tiếp - react-pdf sẽ tự động fetch
+        setPdfUrl(PDF_URL)
       } catch (err) {
-        console.error('Error loading PDF:', err)
-        if (isMounted) {
-          setError(`Không thể tải file PDF: ${err.message}. Vui lòng kiểm tra lại link hoặc kết nối mạng.`)
-          setLoading(false)
-        }
+        console.error('Error testing PDF URL:', err)
+        setError(`Không thể truy cập file PDF: ${err.message}. Vui lòng kiểm tra lại link.`)
+        setLoading(false)
       }
     }
 
-    loadPdf()
-
-    // Cleanup function để revoke blob URL khi component unmount
-    return () => {
-      isMounted = false
-      if (blobUrl) {
-        URL.revokeObjectURL(blobUrl)
-      }
-    }
+    testUrl()
   }, [])
 
   return (
@@ -162,6 +143,11 @@ const Stories = () => {
                   file={pdfUrl}
                   onLoadSuccess={onDocumentLoadSuccess}
                   onLoadError={onDocumentLoadError}
+                  options={{
+                    cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.0/cmaps/',
+                    cMapPacked: true,
+                    standardFontDataUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.0/standard_fonts/',
+                  }}
                   loading={
                     <div className="pdf-loading">
                       <div className="loading-spinner"></div>
@@ -171,8 +157,8 @@ const Stories = () => {
                   <Page 
                     pageNumber={pageNumber} 
                     className="pdf-page"
-                    renderTextLayer={true}
-                    renderAnnotationLayer={true}
+                    renderTextLayer={false}
+                    renderAnnotationLayer={false}
                     width={Math.min(900, window.innerWidth - 80)}
                   />
                 </Document>
