@@ -111,7 +111,7 @@ const Home = () => {
   return (
     <div className="home">
       {/* Hero Section with Video and Carousel */}
-      <section className="hero-section">
+      <section className="hero-section" style={{ display: 'none' }}>
         <div className="container">
           <div className="hero-media-grid">
           <div className="carousel-section">

@@ -9,7 +9,6 @@ const Footer = () => {
             <h3>GIỮ HỒN HÁT ĐÚM</h3>
             <h3>TRONG KỶ NGUYÊN SỐ</h3>
             <div className="contact-info">
-              <p><strong>Địa chỉ:</strong> Xóm Trăng Tà - Xã Toàn Thắng - Tỉnh Phú Thọ</p>
               <p><strong>Điện thoại:</strong> 0394134227</p>
               <p><strong>Email:</strong> dinhcongda131@gmail.com</p>
             </div>
