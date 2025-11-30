@@ -63,13 +63,7 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* ============================================
-              HIDDEN SECTION - BANNER IMAGES
-              ============================================
-              Đã ẩn: 3 banner images ở header (banner1, banner2, banner3)
-              Để hiện lại: Xóa style={{ display: 'none' }} ở dòng 66
-              ============================================ */}
-          <div className="header-banner-images" style={{ display: 'none' }}>
+          <div className="header-banner-images">
             <div className="banner-image-wrapper">
               <img 
                 src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763866039/banner1_bcxmmx.jpg" 
@@ -84,7 +78,13 @@ const Header = () => {
                 className="banner-image banner-2"
               />
               </div>
-            <div className="banner-image-wrapper">
+            {/* ============================================
+                HIDDEN IMAGE - Banner 3
+                ============================================
+                Đã ẩn: Banner 3 (ảnh cuối cùng có border đỏ)
+                Để hiện lại: Xóa style={{ display: 'none' }} ở dòng 87
+                ============================================ */}
+            <div className="banner-image-wrapper" style={{ display: 'none' }}>
               <img 
                 src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763866038/banner3_khnq5d.jpg" 
                 alt="Banner 3" 
