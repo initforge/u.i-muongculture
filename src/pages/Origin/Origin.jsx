@@ -30,7 +30,13 @@ const Origin = () => {
                 Việc trình diễn hát dân ca Mường nghe bên ngoài thấy đơn giản vậy song bên trong ẩn chứa những kỹ năng và bí quyết và đặc biệt là vốn sống, vốn am hiểu cuộc sống của người hát rất sâu, rất rộng về các vấn đề của văn hóa, đời sống mới có thể diễn xướng nhuần nhuyễn và truyền cảm đến người nghe.
               </p>
             </div>
-            <div className="content-image">
+            {/* ============================================
+                HIDDEN IMAGE - Đặc trưng diễn xướng
+                ============================================
+                Đã ẩn: Ảnh "Đặc trưng diễn xướng" ở trang Nguồn gốc
+                Để hiện lại: Xóa style={{ display: 'none' }} ở dòng 33
+                ============================================ */}
+            <div className="content-image" style={{ display: 'none' }}>
               <img 
                 src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763870148/nguongoc_txh55m.png" 
                 alt="Đặc trưng diễn xướng" 
@@ -50,7 +56,13 @@ const Origin = () => {
                 Hát Đúp (hát Đúm) ngoài các bài hát có sẵn (các bài Thường Áng) được lưu truyền trong dân gian còn lại đa việc hát luôn phải ứng tác - ứng khẩu - sáng tạo lời hát (ca từ) hát tức khắc một cách nhuần nhuyễn sao cho kịp khớp với lối giai điệu, nhịp điệu có sẵn để đối đáp tại chỗ. Nghệ nhân hát phải sưu tầm, học hỏi và lưu giữ một khối lượng lớn ngôn ngữ Mường bao gồm cả tiếng Mường cổ và tiếng Mường đương đại. Bản chất của lối hát Đúp thực chất là cuộc là thơ tức thì để đối đáp lại với bạn hát. Như vậy nghệ nhân nắm và lưu giữ rất nhiều tri thức về ngôn ngữ Mường.
               </p>
             </div>
-            <div className="content-image">
+            {/* ============================================
+                HIDDEN IMAGE - Tri thức về ngôn ngữ Mường
+                ============================================
+                Đã ẩn: Ảnh "Tri thức về ngôn ngữ Mường" ở trang Nguồn gốc
+                Để hiện lại: Xóa style={{ display: 'none' }} ở dòng 53
+                ============================================ */}
+            <div className="content-image" style={{ display: 'none' }}>
               <img 
                 src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763870147/nguongoc2_itkogq.jpg" 
                 alt="Tri thức về ngôn ngữ Mường" 

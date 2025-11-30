@@ -63,7 +63,13 @@ const Header = () => {
             </Link>
           </div>
 
-          <div className="header-banner-images">
+          {/* ============================================
+              HIDDEN SECTION - BANNER IMAGES
+              ============================================
+              Đã ẩn: 3 banner images ở header (banner1, banner2, banner3)
+              Để hiện lại: Xóa style={{ display: 'none' }} ở dòng 66
+              ============================================ */}
+          <div className="header-banner-images" style={{ display: 'none' }}>
             <div className="banner-image-wrapper">
               <img 
                 src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763866039/banner1_bcxmmx.jpg" 
