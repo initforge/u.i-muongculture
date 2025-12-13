@@ -18,13 +18,7 @@ const Characteristics = () => {
               </p>
             </div>
             
-            {/* ============================================
-                HIDDEN IMAGES - Nhạc cụ (Sáo ôi & Đàn nhị)
-                ============================================
-                Đã ẩn: Ảnh Sáo ôi và Đàn nhị ở trang Đặc trưng
-                Để hiện lại: Xóa style={{ display: 'none' }} ở dòng 21
-                ============================================ */}
-            <div className="instruments-preview" style={{ display: 'none' }}>
+            <div className="instruments-preview">
               <div className="instrument-item">
                 <img 
                   src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763871160/saooi_qlchya.jpg" 
@@ -62,13 +56,7 @@ const Characteristics = () => {
               </p>
             </div>
             
-            {/* ============================================
-                HIDDEN IMAGE - Nghệ nhân
-                ============================================
-                Đã ẩn: Ảnh nghệ nhân Bùi Văn Lịch và Đinh Thị Hiền ở trang Đặc trưng
-                Để hiện lại: Xóa style={{ display: 'none' }} ở dòng 59
-                ============================================ */}
-            <div className="artisan-image" style={{ display: 'none' }}>
+            <div className="artisan-image">
               <img 
                 src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763871165/dactrung1_csrcdo.jpg" 
                 alt="Nghệ nhân Bùi Văn Lịch và Đinh Thị Hiền" 
@@ -94,13 +82,7 @@ const Characteristics = () => {
               </p>
             </div>
             
-            {/* ============================================
-                HIDDEN IMAGE - Vai trò của điệu hát Đúm
-                ============================================
-                Đã ẩn: Ảnh "Vai trò của điệu hát Đúm" ở trang Đặc trưng
-                Để hiện lại: Xóa style={{ display: 'none' }} ở dòng 85
-                ============================================ */}
-            <div className="role-image" style={{ display: 'none' }}>
+            <div className="role-image">
               <img 
                 src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763871162/dactrung2_ubrfcg.jpg" 
                 alt="Vai trò của điệu hát Đúm" 

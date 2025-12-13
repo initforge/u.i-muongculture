@@ -10,22 +10,13 @@ const Stories = () => {
             <h2 className="section-title">Truyện Hát Đúm</h2>
           </div>
 
-          {/* ============================================
-              HIDDEN SECTION - Story Intro & Gemini Link
-              ============================================
-              Đã ẩn: 
-              - Phần giới thiệu câu chuyện (story-intro)
-              - Canva embed iframe
-              - Link liên kết tới Gemini (https://gemini.google.com/share/50adaef67187)
-              Để hiện lại: Xóa style={{ display: 'none' }} ở dòng 13 và 19
-              ============================================ */}
-          <div className="story-intro" style={{ display: 'none' }}>
+          <div className="story-intro">
             <p>
               Đắm chìm trong những câu chuyện cổ tích và truyền thuyết của người Mường, nơi mỗi câu chuyện đều mang trong mình những bài học sâu sắc về cuộc sống, tình yêu, và giá trị nhân văn. Những câu chuyện này được truyền từ đời này sang đời khác, góp phần bảo tồn và phát huy giá trị văn hóa truyền thống của dân tộc Mường.
             </p>
           </div>
 
-          <div className="stories-embed" style={{ display: 'none' }}>
+          <div className="stories-embed">
             <div className="canva-embed-wrapper">
               <iframe
                 loading="lazy"

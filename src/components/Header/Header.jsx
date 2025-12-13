@@ -78,13 +78,7 @@ const Header = () => {
                 className="banner-image banner-2"
               />
               </div>
-            {/* ============================================
-                HIDDEN IMAGE - Banner 3
-                ============================================
-                Đã ẩn: Banner 3 (ảnh cuối cùng có border đỏ)
-                Để hiện lại: Xóa style={{ display: 'none' }} ở dòng 87
-                ============================================ */}
-            <div className="banner-image-wrapper" style={{ display: 'none' }}>
+            <div className="banner-image-wrapper">
               <img 
                 src="https://res.cloudinary.com/dghawsj8e/image/upload/v1763866038/banner3_khnq5d.jpg" 
                 alt="Banner 3" 

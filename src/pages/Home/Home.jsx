@@ -110,13 +110,8 @@ const Home = () => {
 
   return (
     <div className="home">
-      {/* ============================================
-          HIDDEN SECTION - HERO (Carousel & Video)
-          ============================================
-          Đã ẩn: Carousel ảnh và Video YouTube ở trang chủ
-          Để hiện lại: Xóa style={{ display: 'none' }} ở dòng 114
-          ============================================ */}
-      <section className="hero-section" style={{ display: 'none' }}>
+      {/* Hero Section with Video and Carousel */}
+      <section className="hero-section">
         <div className="container">
           <div className="hero-media-grid">
           <div className="carousel-section">
