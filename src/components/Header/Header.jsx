@@ -160,6 +160,15 @@ const Header = () => {
               </li>
               <li>
                 <Link 
+                  to="/hoi-dum" 
+                  className={isActive('/hoi-dum') ? 'active' : ''}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  HỎI ĐÚM
+                </Link>
+              </li>
+              <li>
+                <Link 
                   to="/trai-nghiem" 
                   className={isActive('/trai-nghiem') ? 'active' : ''}
                   onClick={() => setIsMenuOpen(false)}

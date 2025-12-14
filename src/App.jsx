@@ -10,6 +10,7 @@ import Characteristics from './pages/Characteristics/Characteristics'
 import Stories from './pages/Stories/Stories'
 import Instruments from './pages/Instruments/Instruments'
 import Lyrics from './pages/Lyrics/Lyrics'
+import HoiDum from './pages/HoiDum/HoiDum'
 import Experience from './pages/Experience/Experience'
 
 function AppContent() {
@@ -389,6 +390,7 @@ function AppContent() {
             <Route path="/truyen" element={<Stories />} />
             <Route path="/nhac-cu" element={<Instruments />} />
             <Route path="/loi-hat" element={<Lyrics />} />
+            <Route path="/hoi-dum" element={<HoiDum />} />
             <Route path="/trai-nghiem" element={<Experience />} />
           </Routes>
         </main>
