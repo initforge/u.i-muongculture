@@ -1,23 +1,19 @@
 🇻🇳 [Đọc bằng tiếng Việt](README-vi.md)
 
-# UI Muong Culture
+# UI Muong Culture — Cultural Heritage Platform
 
-Cultural heritage website for Muong ethnic group
+![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
 
-## Tech Stack
-
-![HTML](https://img.shields.io/badge/HTML-E34F26?style=flat-square&logo=html5&logoColor=white) ![CSS](https://img.shields.io/badge/CSS-1572B6?style=flat-square&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=white)
+A cultural heritage website for the Muong ethnic group in Vietnam. Multi-page React app with Vercel Blob storage for media content.
 
 ## Features
 
-- Cultural content showcase
-- Traditional art gallery
-- Responsive heritage layout
-- Educational content
+- Cultural content pages with React Router
+- Media storage with Vercel Blob
+- Context-based state management
+- Responsive design for cultural education
 
 ---
-
-## Author
 
 **Xuan Linh** — Fullstack Developer
 
