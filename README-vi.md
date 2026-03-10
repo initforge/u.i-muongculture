@@ -1,23 +1,19 @@
 🇬🇧 [Read in English](README.md)
 
-# UI Văn hóa Mường
+# UI Văn hóa Mường — Nền tảng Di sản Văn hóa
 
-Website di sản văn hóa dân tộc Mường
+![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
 
-## Công nghệ
-
-![HTML](https://img.shields.io/badge/HTML-E34F26?style=flat-square&logo=html5&logoColor=white) ![CSS](https://img.shields.io/badge/CSS-1572B6?style=flat-square&logo=css3&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=white)
+Website di sản văn hóa dân tộc Mường Việt Nam. React app nhiều trang với Vercel Blob lưu trữ nội dung multimedia.
 
 ## Tính năng
 
-- Trưng bày nội dung văn hóa
-- Gallery nghệ thuật truyền thống
-- Layout di sản responsive
-- Nội dung giáo dục
+- Trang nội dung văn hóa với React Router
+- Lưu trữ media bằng Vercel Blob
+- Quản lý state bằng Context
+- Thiết kế responsive cho giáo dục văn hóa
 
 ---
-
-## Tác giả
 
 **Xuan Linh** — Fullstack Developer
 
