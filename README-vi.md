@@ -4,14 +4,25 @@
 
 ![React](https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=react&logoColor=white) ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white)
 
-Website di sản văn hóa dân tộc Mường Việt Nam. React app nhiều trang với Vercel Blob lưu trữ nội dung multimedia.
+Website di sản văn hóa dân tộc Mường Việt Nam.
+
+## Xem trước
+
+![UI Văn hóa Mường — Nền tảng Di sản Văn hóa](docs/screenshot.png)
 
 ## Tính năng
 
 - Trang nội dung văn hóa với React Router
 - Lưu trữ media bằng Vercel Blob
-- Quản lý state bằng Context
-- Thiết kế responsive cho giáo dục văn hóa
+- Thiết kế responsive
+
+## Cài đặt
+
+```bash
+git clone https://github.com/initforge/u.i-muongculture.git
+cd u.i-muongculture
+npm install && npm run dev
+```
 
 ---
 
